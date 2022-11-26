@@ -2,27 +2,28 @@
 # homeMeteo
 Distributed home meteorologic stations.
 
-#Network testing
-make sure that iptables are correct:
-agtorres@andrePC:~/repos/homeMeteo$ sudo iptables -S
--P INPUT DROP
--P FORWARD DROP
--P OUTPUT ACCEPT
+Based on the ChipCap2 sensor and nodeMCU development board. Data is pushed with an html post to the IST web server and saved on a mySQL DB.
 
-sudo iptables --policy INPUT ACCEPT
+[Online](
+https://web.tecnico.ulisboa.pt/~andregtorres/homeMeteo/)
 
-## Simple hhtp server
-python:
-python3 -m http.server 8080
-php:
-php -S 192.168.0.199:8080
-
+## NodeMCU
 
 For my old node MCU boards, I had to downgrade the Esp Board Driver to 2.3.0 as seen [here](
 https://github.com/FirebaseExtended/firebase-arduino/issues/460).
 
-## Wiring
-orange D1
-green D2
-red 3V
-yellow G
+![pinout](Documents/NodeMcu-V3-pinout.png)
+## ChipCap2 Wiring
+
+The Chip uses I2C to communicate. There is already a arduino/nodeMCU library with all the wrappers for the functions. Using standard pins for I2C.
+
+![aaa](Documents/chipcap2.png)
+
+Connections:
+
+| ChipCap2      | NodeMCU | Wire color |
+| ----------- | ----------- | ----------- |
+| SLC      | D1       | orange|
+| VDD   | 3V        |  red|
+| VSS   | GND        | yellow|
+| SDA   | D2        | green|
