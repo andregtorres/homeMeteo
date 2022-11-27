@@ -7,6 +7,8 @@ Based on the ChipCap2 sensor and nodeMCU development board. Data is pushed with 
 [Online](
 https://web.tecnico.ulisboa.pt/~andregtorres/homeMeteo/)
 
+![stats21](Documents/home_meteo_2021.png)
+
 ## NodeMCU
 
 For my old node MCU boards, I had to downgrade the Esp Board Driver to 2.3.0 as seen [here](
