@@ -40,9 +40,11 @@ def insertDay(mydb, day, host, data):
         except Exception as e:
             raise
             rc=1
+    else:
+        print("X ",day, float(data[0][0]))
     return rc
 
-def deleteFromDb(mydb, day, host, interval):
+def deleteFromDb(mydb, host, interval):
     mycursor = mydb.cursor()
     sql = 'DELETE FROM homeMeteoLogs WHERE host = {} AND timestamp <= ( CURDATE() - INTERVAL {})'.format(host,interval)
     mycursor.execute(sql)
@@ -74,6 +76,7 @@ if __name__ == '__main__':
     with open('ist_db.pw', 'r') as file:
         db_pw = file.read().rstrip()
     host=0
+    #does not delete the last timeFrame period
     timeFrame="1 WEEK"
 
     mydB=connectDB(db_user,db_pw)
@@ -94,12 +97,13 @@ if __name__ == '__main__':
             curr=date
         elif date!=curr:
             stats=processDay (temp[start:i],humi[start:i])
-            rc+=insertDay(mydB, date, host, stats)
+            rc+=insertDay(mydB, curr, host, stats)
             start=i
             curr=date
 
+
     if rc==0:
         print("Deleting from Database")
-        deleteFromDb(mydB, date, host, timeFrame)
+        deleteFromDb(mydB, host, timeFrame)
     else:
         print("Found errors in {} days".format(rc))
