@@ -7,7 +7,7 @@
 <body>
   <h1> Home Meteo </h1>
   <?php
-  $servername = "";
+  $servername = "db.tecnico.ulisboa.pt";
   $username = "";
   $password = "";
   $dbname = "";
@@ -92,6 +92,7 @@
 
   $conn->close();
   ?>
+	<p><a href="full.php">Full data</a></p>
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
