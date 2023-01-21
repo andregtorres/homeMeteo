@@ -13,9 +13,12 @@ sudo iptables --policy INPUT ACCEPT
 
 ## Simple hhtp server
 python:
-python3 -m http.server 8080
+`python3 -m http.server 8080`
+
 php:
-php -S 192.168.0.199:8080
+`php -S 192.168.0.199:8080`
+
+need packages `php-cli` and `php-mysql`.
 
 
 For my old node MCU boards, I had to downgrade the Esp Board Driver to 2.3.0 as seen [here](

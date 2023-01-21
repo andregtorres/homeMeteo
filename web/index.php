@@ -19,7 +19,7 @@
     die("Connection failed: " . $conn->connect_error);
   }
 
-  $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 1 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
+  $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 0 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
   $result1 = $conn->query($sql1);
 
 
