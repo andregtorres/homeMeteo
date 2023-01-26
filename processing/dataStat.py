@@ -77,11 +77,11 @@ if __name__ == '__main__':
         db_pw = file.read().rstrip()
     host=0
     #does not delete the last timeFrame period
-    timeFrame="1 WEEK"
+    timeFrame="5 DAY"
 
     mydB=connectDB(db_user,db_pw)
     #get data older than a week
-    data0=np.array(getOldData(mydB, host,"1 DAY")).T
+    data0=np.array(getOldData(mydB, host,"0 HOUR")).T
     #process
     times=data0[0]
     temp=data0[1]/100
@@ -97,13 +97,16 @@ if __name__ == '__main__':
             curr=date
         elif date!=curr:
             stats=processDay (temp[start:i],humi[start:i])
-            rc+=insertDay(mydB, curr, host, stats)
+            #rc+=insertDay(mydB, curr, host, stats)
             start=i
             curr=date
+     #last day
+    stats=processDay (temp[start:],humi[start:])
+    rc+=insertDay(mydB, curr, host, stats)
 
 
     if rc==0:
         print("Deleting from Database")
-        deleteFromDb(mydB, host, timeFrame)
+        #deleteFromDb(mydB, host, timeFrame)
     else:
         print("Found errors in {} days".format(rc))
