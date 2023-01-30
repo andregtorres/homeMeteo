@@ -92,6 +92,26 @@
 
   $conn->close();
   ?>
+  <!-- BODY HERE -->
+  <table>
+    <thead>
+        <tr>
+            <th colspan="2">Last update: <?php echo end($time_array_1);?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Temperature:</td>
+            <td><?php echo end($temp_array_1)/100;?> &#176;C</td>
+        </tr>
+        <tr>
+            <td>Rel. humidity:</td>
+            <td><?php echo end($humi_array_1)/100;?> %</td>
+        </tr>
+    </tbody>
+</table>
+
+
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
