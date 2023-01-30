@@ -97,7 +97,7 @@ if __name__ == '__main__':
             curr=date
         elif date!=curr:
             stats=processDay (temp[start:i],humi[start:i])
-            #rc+=insertDay(mydB, curr, host, stats)
+            rc+=insertDay(mydB, curr, host, stats)
             start=i
             curr=date
      #last day
@@ -107,6 +107,6 @@ if __name__ == '__main__':
 
     if rc==0:
         print("Deleting from Database")
-        #deleteFromDb(mydB, host, timeFrame)
+        deleteFromDb(mydB, host, timeFrame)
     else:
         print("Found errors in {} days".format(rc))
