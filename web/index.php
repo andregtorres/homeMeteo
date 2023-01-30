@@ -47,7 +47,7 @@
 	#CREATE TABLE homeMeteoStats( day DATE, id TINYINT UNSIGNED,
 	#        t_avg DOUBLE, t_std DOUBLE, t_median DOUBLE, t_min DOUBLE, t_max DOUBLE, t_q25 DOUBLE, t_q75 DOUBLE
 	#        h_avg DOUBLE, h_std DOUBLE, h_median DOUBLE, h_min DOUBLE, h_max DOUBLE, h_q25 DOUBLE, h_q75 DOUBLE);
-	$sql2 = "SELECT day, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75, h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75  FROM homeMeteoStats WHERE id = 0 ORDER BY day";
+	$sql2 = "SELECT day, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75, h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75  FROM homeMeteoStats WHERE id = 0  AND day >= ( CURDATE() - INTERVAL 1 YEAR) ORDER BY day";
   $result2 = $conn->query($sql2);
 	if ($result2->num_rows > 0) {
     // output data of each row
@@ -92,7 +92,7 @@
 
   $conn->close();
   ?>
-	<p><a href="full.php">Full data</a></p>
+	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
