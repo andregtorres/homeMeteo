@@ -1,7 +1,8 @@
 <head>
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-
+  <title>HomeMeteo</title>
+  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 
 <body>
