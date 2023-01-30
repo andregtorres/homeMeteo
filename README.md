@@ -1,5 +1,6 @@
 
 # homeMeteo
+![logo](Documents/homeMeteo.png)
 Distributed home meteorologic stations.
 
 Based on the ChipCap2 sensor and nodeMCU development board. Data is pushed with an html post to the IST web server and saved on a mySQL DB.
