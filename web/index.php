@@ -116,6 +116,7 @@
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div id="hoverinfo" style="margin-left:200px;"></div><!-- Histogram -->
   <script>
   var times = <?php echo $json_time_1; ?>;
   var temp = <?php echo $json_temp_1; ?>.map(x=>+x/100);
@@ -152,6 +153,7 @@
       row:2,
       col:1,
     },
+    hovermode:'x unified',
   };
   Plotly.newPlot('plotlyDiv1', data, layout);
 	</script>
@@ -270,7 +272,25 @@
       row:2,
       col:1,
     },
+    hovermode:'closest',
   };
+  //https://plotly.com/javascript/hover-events/
+  var myPlot = document.getElementById('plotlyDiv2'),
+    hoverInfo = document.getElementById('hoverinfo');
+  
   Plotly.newPlot('plotlyDiv2', data, layout);
+  myPlot.on('plotly_hover', function(data){
+    hoverInfo.innerHTML = '';
+    var infotext = data.points.map(function(d){
+      return('<img src="plots/homeMeteo_full_'+data.points[0].x+'.png" alt="'+data.points[0].x+'" onerror="this.onerror=null; this.src=\'plots/notFound.jpg\'">');
+      });
+
+    hoverInfo.innerHTML = infotext.join('<br/>');
+  })
+  .on('plotly_unhover', function(data){
+    //hoverInfo.innerHTML = '';
+  });
+  
+  
 	</script>
 </body>

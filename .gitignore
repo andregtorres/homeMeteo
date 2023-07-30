@@ -5,3 +5,4 @@ tecnico
 nodeMCU/production/*
 web/production/*
 processing/data/*
+plots/*
