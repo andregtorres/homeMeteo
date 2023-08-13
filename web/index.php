@@ -1,3 +1,5 @@
+<style><?php include 'style.css'; ?></style>
+
 <head>
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
@@ -13,7 +15,7 @@
   $password = "";
   $dbname = "";
 
-  // Create connection
+	// Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
   // Check connection
   if ($conn->connect_error) {
@@ -116,8 +118,11 @@
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
-  <div id="hoverinfo" style="margin-left:200px;"></div><!-- Histogram -->
-  <script>
+	<!-- as seen in https://itnext.io/how-to-stop-content-jumping-when-images-load-7c915e47f576 -->
+	 <div class="wrapper">
+		 <div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
+	</div>
+	<script>
   var times = <?php echo $json_time_1; ?>;
   var temp = <?php echo $json_temp_1; ?>.map(x=>+x/100);
   var humi = <?php echo $json_humi_1; ?>.map(x=>+x/100);
@@ -277,7 +282,7 @@
   //https://plotly.com/javascript/hover-events/
   var myPlot = document.getElementById('plotlyDiv2'),
     hoverInfo = document.getElementById('hoverinfo');
-  
+
   Plotly.newPlot('plotlyDiv2', data, layout);
   myPlot.on('plotly_hover', function(data){
     hoverInfo.innerHTML = '';
@@ -290,7 +295,7 @@
   .on('plotly_unhover', function(data){
     //hoverInfo.innerHTML = '';
   });
-  
-  
+
+
 	</script>
 </body>
