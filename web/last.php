@@ -4,7 +4,7 @@
 
 <body>
   <?php
-	$servername = "db.tecnico.ulisboa.pt";
+	$servername = "";
   $username = "";
   $password = "";
   $dbname = "";

@@ -6,7 +6,7 @@
 //DEFINITIONS
 #define ssid "NETWORK_ID_GOES_HERE"
 #define password "WIFI_PW_GOES_HERE"
-#define srv_adress "http://web.tecnico.ulisboa.pt/andregtorres/homeMeteo/postData.php"
+#define srv_adress "http://server/homeMeteo/postData.php"
 #define session_id 99 //change number acordingly
 
 //initializations

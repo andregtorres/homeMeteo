@@ -1,7 +1,7 @@
 <?php
 //Creates new record as per request
     //Connect to database
-    $servername = "db.tecnico.ulisboa.pt";
+    $servername = "";
     $username = "";
     $password = "";
     $dbname = "";

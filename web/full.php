@@ -8,7 +8,7 @@
 <body>
   <h1> Home Meteo </h1>
   <?php
-  $servername = "db.tecnico.ulisboa.pt";
+  $servername = "";
   $username = "";
   $password = "";
   $dbname = "";
