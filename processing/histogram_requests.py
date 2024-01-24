@@ -77,9 +77,11 @@ class histogramData:
         fig.tight_layout()
         if save != "":
             if full:
-                plt.savefig(save+"homeMeteo"+"_full_"+self.date+".png")
+                fname=save+"homeMeteo"+"_full_"+self.date+".png"
             else:
-                plt.savefig(save+"homeMeteo"+"_"+self.date+".png")
+                fname=save+"homeMeteo"+"_"+self.date+".png"
+            plt.savefig(fname)
+            return fname
 
 if __name__ == '__main__':
     #definition
@@ -107,6 +109,10 @@ if __name__ == '__main__':
         print("ERROR parsing request")
         exit(-1)
 
+    if data is None:
+        print("No days to plot")
+        exit(0)
+
     for each in data:
         print(each["seq"])
         values = json.loads(each["payload"])
@@ -117,5 +123,7 @@ if __name__ == '__main__':
 
 
         hist=histogramData(day,temp,humi)
-        hist.bigPlot(full=True, save=loc)
-        hist.bigPlot(full=False, save=loc)
+        plot=hist.bigPlot(full=True, save=loc)
+        #hist.bigPlot(full=False, save=loc)
+        with open(loc+"newPlots.txt", 'a') as file:
+            file.write(plot+"\n")
