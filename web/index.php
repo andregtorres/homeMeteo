@@ -10,12 +10,12 @@
 <body>
   <h1> Home Meteo </h1>
   <?php
-  $servername = "";
+	$servername = "";
 	$username = "";
-  $password = "";
-  $dbname = "";
+	$password = "";
+	$dbname = "";
 
-	// Create connection
+  // Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
   // Check connection
   if ($conn->connect_error) {
@@ -96,7 +96,20 @@
   $conn->close();
   ?>
   <!-- BODY HERE -->
-  <table>
+	<?php
+	$now = new DateTime('now');
+	$then = new DateTime(end($time_array_1));
+	$interval =  $now->getTimestamp() - $then->getTimestamp();
+	$status="Ofline";
+	$color="#ff0000"; //red
+	if ($interval < 120){
+		$status="Online";
+		$color="#228b22";
+		//echo $interval;
+	}
+	//echo $status;
+	?>
+	<table>
     <thead>
         <tr>
             <th colspan="2">Last update: <?php echo end($time_array_1);?></th>
@@ -112,7 +125,9 @@
             <td><?php echo end($humi_array_1)/100;?> %</td>
         </tr>
     </tbody>
-</table>
+	</table>
+	<span class="dot" style="background-color:<?php echo $color;?>;"></span>
+	<?php echo $status; ?>
 
 
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
