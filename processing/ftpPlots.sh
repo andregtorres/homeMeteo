@@ -1,19 +1,19 @@
 #!/bin/bash
-# adpted from: https://www.geeksforgeeks.org/shell-script-to-put-file-in-a-ftp-server/
-#usage: ./ftpTrans.sh  path_to_upload file1 file2 file3
-
-source ftpConnectionDetails.pw
+#place inside plots dir
+source ../processing/ftpConnectionDetails.pw
 
 # $1 is the first argument to the script
 # We are using it as upload directory path
 # If it is '.', file is uploaded to current directory.
-DESTINATION=$1
+DESTINATION="plots/"
 
 
 # Rest of the arguments are a list of files to be uploaded.
 # ${@:2} is an array of arguments without first one.
-ALL_FILES="${@:2}"
-
+#ALL_FILES="${@:2}"
+mapfile -t ALL_FILES1 < newPlots.txt
+ALL_FILES=${ALL_FILES1[@]}
+echo $ALL_FILES
 
 # FTP login and upload is explained in paragraph below
 ftp -inv $HOST <<EOF
@@ -23,3 +23,5 @@ cd $DESTINATION
 mput $ALL_FILES
 bye
 EOF
+
+rm newPlots.txt

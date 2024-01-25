@@ -77,10 +77,12 @@ class histogramData:
         fig.tight_layout()
         if save != "":
             if full:
-                fname=save+"homeMeteo"+"_full_"+self.date+".png"
+                fname="homeMeteo"+"_full_"+self.date+".png"
+                ffname=save+fname
             else:
-                fname=save+"homeMeteo"+"_"+self.date+".png"
-            plt.savefig(fname)
+                fname="homeMeteo"+"_"+self.date+".png"
+                ffname=save+fname
+            plt.savefig(ffname)
             return fname
 
 if __name__ == '__main__':
