@@ -26,8 +26,9 @@
         echo "interval: ".$interval."\n";
 
         $sql = "DELETE FROM homeMeteoLogs WHERE host = ".$id." AND timestamp <= ( CURDATE() - INTERVAL ".$interval.")";
-        echo $sql;
+        //echo $sql;
         $result = $conn->query($sql);
+        echo "DELETED ROWS";
 
     } else {
         echo "Error - invalid host id\n";
