@@ -120,12 +120,13 @@ if __name__ == '__main__':
         values = json.loads(each["payload"])
         time=values["time"]
         day=values["day"]
-        temp=[int(numeric_string)/100. for numeric_string in values["temp"]]
-        humi=[int(numeric_string)/100. for numeric_string in values["humi"]]
+        if values["temp"]:
+            temp=[int(numeric_string)/100. for numeric_string in values["temp"]]
+            humi=[int(numeric_string)/100. for numeric_string in values["humi"]]
 
 
-        hist=histogramData(day,temp,humi)
-        plot=hist.bigPlot(full=True, save=loc)
-        #hist.bigPlot(full=False, save=loc)
-        with open(loc+"newPlots.txt", 'a') as file:
-            file.write(plot+"\n")
+            hist=histogramData(day,temp,humi)
+            plot=hist.bigPlot(full=True, save=loc)
+            #hist.bigPlot(full=False, save=loc)
+            with open(loc+"newPlots.txt", 'a') as file:
+                file.write(plot+"\n")

@@ -86,6 +86,14 @@
       //echo "t_avg=".$t_avg." t_std=".$t_std." t_median=".$t_median."t_min=".$t_min." t_max=".$t_max." t_q25=".$t_q25." t_q75=".$t_q75."\n";
       return[$t_min,$t_max,$t_avg,$t_std,$t_median,$t_q25,$t_q75,$h_min,$h_max,$h_avg,$h_std,$h_median,$h_q25,$h_q75];
     }
+    function checkDay($conn, $id, $day_input){
+      $nextDay=clone $day_input;
+      $nextDay->modify('+1 day');
+      $sql = "SELECT * FROM homeMeteoLogs WHERE (host = ".$id." AND timestamp >='".$day_input->format("Y-m-d H:i:s")."' AND timestamp <'".$nextDay->format("Y-m-d H:i:s")."')";
+      $result = $conn->query($sql);
+      echo "DB OK got ".$result->num_rows." rows.\n";
+      return($result->num_rows>0);
+    }
 
 
     //Connect to database
@@ -118,15 +126,19 @@
         echo "first day to processs ".$day->format("Y-m-d")."\n";
         while($day < $today){
           echo "   ".$day->format("Y-m-d")."\n";
-          [$t_min,$t_max,$t_avg,$t_std,$t_median,$t_q25,$t_q75,$h_min,$h_max,$h_avg,$h_std,$h_median,$h_q25,$h_q75]=processDay($conn, $id, $day);
-          //Put in dB
-          $day_s=$day->format("Y-m-d");
-          $sql = "INSERT INTO homeMeteoStats (day, id, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75,  h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75) VALUES('".$day_s."',".$id.",".$t_avg.",".$t_std.",".$t_median.",".$t_min.",".$t_max.",".$t_q25.",".$t_q75.",".$h_avg.",".$h_std.",".$h_median.",".$h_min.",".$h_max.",".$h_q25.",".$h_q75.")";
+          if (checkDay($conn, $id, $day) === TRUE) {
+            [$t_min,$t_max,$t_avg,$t_std,$t_median,$t_q25,$t_q75,$h_min,$h_max,$h_avg,$h_std,$h_median,$h_q25,$h_q75]=processDay($conn, $id, $day);
+            //Put in dB
+            $day_s=$day->format("Y-m-d");
+            $sql = "INSERT INTO homeMeteoStats (day, id, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75,  h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75) VALUES('".$day_s."',".$id.",".$t_avg.",".$t_std.",".$t_median.",".$t_min.",".$t_max.",".$t_q25.",".$t_q75.",".$h_avg.",".$h_std.",".$h_median.",".$h_min.",".$h_max.",".$h_q25.",".$h_q75.")";
 
-          if ($conn->query($sql) === TRUE) {
-              echo "DB OK - INSERTED DAY\n";
+            if ($conn->query($sql) === TRUE) {
+                echo "DB OK - INSERTED DAY\n";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
           } else {
-              echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "No resuts, skipping";
           }
           $day->modify('+1 day');
         }
