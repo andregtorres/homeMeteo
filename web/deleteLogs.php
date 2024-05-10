@@ -1,16 +1,6 @@
 <?php
     //Connect to database
-    $servername = "localhost";
-    $username = "";
-    $password = "";
-    $dbname = "";
-
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    // Check connection
-    if ($conn->connect_error) {
-        die("Database Connection failed: " . $conn->connect_error);
-    }
+    include("include/dbConn.php");
 
     $interval = "5 DAY";
     //Get current date
@@ -29,7 +19,6 @@
         //echo $sql;
         $result = $conn->query($sql);
         echo "DELETED ROWS";
-
     } else {
         echo "Error - invalid host id\n";
       }

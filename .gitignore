@@ -4,5 +4,6 @@ node_modules/*
 tecnico
 nodeMCU/production/*
 web/production/*
+web/BKP/*
 processing/data/*
 plots/*

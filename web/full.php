@@ -8,17 +8,8 @@
 <body>
   <h1> Home Meteo </h1>
   <?php
-  $servername = "";
-  $username = "";
-  $password = "";
-  $dbname = "";
-
-  // Create connection
-  $conn = new mysqli($servername, $username, $password, $dbname);
-  // Check connection
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
+	//Connect to database
+	include("include/dbConn.php");
 
   $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 0";
   $result1 = $conn->query($sql1);
