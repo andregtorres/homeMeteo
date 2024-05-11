@@ -51,19 +51,24 @@
     }
 
     function getLastStatRow($conn, $id){
-      $sql = "SELECT * FROM homeMeteoStats WHERE id = ".$id." ORDER BY day DESC LIMIT 1";
-      $result = $conn->query($sql);
+      $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
+      $stmt -> bind_param("s", $id);
+      $stmt->execute();
       //echo " DB OK got ".$result->num_rows." row.\n";
-      $row = $result->fetch_assoc();
+      $row = mysqli_fetch_array($stmt, MYSQLI_ASSOC);
       //echo "last row in stat " .$row["day"]. "\n";
+      $stmt -> close();
       return($row["day"]);
     }
 
     function processDay($conn, $id, $day_input){
       $nextDay=clone $day_input;
       $nextDay->modify('+1 day');
-      $sql = "SELECT * FROM homeMeteoLogs WHERE (host = ".$id." AND timestamp >='".$day_input->format("Y-m-d H:i:s")."' AND timestamp <'".$nextDay->format("Y-m-d H:i:s")."')";
-      $result = $conn->query($sql);
+      $stmt = $conn->prepare("SELECT * FROM homeMeteoLogs WHERE (host = ? AND timestamp >= ?  AND timestamp < ? )");
+      $stmt -> bind_param("sss", $id, $day_input->format("Y-m-d H:i:s"), $nextDay->format("Y-m-d H:i:s"));
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $stmt -> close();
       echo "DB OK got ".$result->num_rows." rows.\n";
       while($row = $result->fetch_assoc()) {
         $temp_array[] = $row["temp"];
@@ -89,8 +94,11 @@
     function checkDay($conn, $id, $day_input){
       $nextDay=clone $day_input;
       $nextDay->modify('+1 day');
-      $sql = "SELECT * FROM homeMeteoLogs WHERE (host = ".$id." AND timestamp >='".$day_input->format("Y-m-d H:i:s")."' AND timestamp <'".$nextDay->format("Y-m-d H:i:s")."')";
-      $result = $conn->query($sql);
+      $stmt = $conn->prepare("SELECT * FROM homeMeteoLogs WHERE (host = ? AND timestamp >= ?  AND timestamp < ? )");
+      $stmt -> bind_param("sss", $id, $day_input->format("Y-m-d H:i:s"), $nextDay->format("Y-m-d H:i:s"));
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $stmt -> close();
       echo "DB OK got ".$result->num_rows." rows.\n";
       return($result->num_rows>0);
     }
@@ -105,7 +113,7 @@
     $today = new DateTime($today_s);
     echo "today: ".$today_s."\n";
     if(isset($_POST['id'])){
-        $id = $_POST['id'];
+        $id = test_input($_POST['id']);
         echo "id: ".$id."\n";
 
         $lastStatDay=getLastStatRow($conn, $id);
@@ -120,13 +128,11 @@
             [$t_min,$t_max,$t_avg,$t_std,$t_median,$t_q25,$t_q75,$h_min,$h_max,$h_avg,$h_std,$h_median,$h_q25,$h_q75]=processDay($conn, $id, $day);
             //Put in dB
             $day_s=$day->format("Y-m-d");
-            $sql = "INSERT INTO homeMeteoStats (day, id, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75,  h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75) VALUES('".$day_s."',".$id.",".$t_avg.",".$t_std.",".$t_median.",".$t_min.",".$t_max.",".$t_q25.",".$t_q75.",".$h_avg.",".$h_std.",".$h_median.",".$h_min.",".$h_max.",".$h_q25.",".$h_q75.")";
-
-            if ($conn->query($sql) === TRUE) {
-                echo "DB OK - INSERTED DAY\n";
-            } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
-            }
+            $stmt = $conn->prepare("INSERT INTO homeMeteoStats (day, id, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75,  h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt -> bind_param("ssssssssssssssss", $day_s,$id,$t_avg,$t_std,$t_median,$t_min,$t_max,$t_q25,$t_q75,$h_avg,$h_std,$h_median,$h_min,$h_max,$h_q25,$h_q75);
+            $stmt->execute();
+            echo "DB OK - INSERTED DAY\n";
+            $stmt -> close();
           } else {
             echo "No resuts, skipping";
           }

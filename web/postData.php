@@ -1,11 +1,4 @@
 <?php
-//Creates new record as per request
-  function test_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-  }
     //Connect to database
     include("include/dbConn.php");
 
