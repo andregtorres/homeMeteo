@@ -1,19 +1,24 @@
 <?php
 
     function getLastStatRow($conn, $id){
-      $sql = "SELECT * FROM homeMeteoStats WHERE id = ".$id." ORDER BY day DESC LIMIT 1";
-      $result = $conn->query($sql);
+      $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
+      $stmt -> bind_param("s", $id);
+      $stmt->execute();
       //echo " DB OK got ".$result->num_rows." row.\n";
-      $row = $result->fetch_assoc();
+      $row = mysqli_fetch_array($stmt, MYSQLI_ASSOC);
       //echo "last row in stat " .$row["day"]. "\n";
+      $stmt -> close();
       return($row["day"]);
     }
 
     function processDay($conn, $id, $day_input){
       $nextDay=clone $day_input;
       $nextDay->modify('+1 day');
-      $sql = "SELECT * FROM homeMeteoLogs WHERE (host = ".$id." AND timestamp >='".$day_input->format("Y-m-d H:i:s")."' AND timestamp <'".$nextDay->format("Y-m-d H:i:s")."')";
-      $result = $conn->query($sql);
+      $stmt = $conn->prepare("SELECT * FROM homeMeteoLogs WHERE (host = ? AND timestamp >= ?  AND timestamp < ? )");
+      $stmt -> bind_param("sss", $id, $day_input->format("Y-m-d H:i:s"), $nextDay->format("Y-m-d H:i:s"));
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $stmt -> close();
       //echo "DB OK got ".$result->num_rows." rows.\n";
       while($row = $result->fetch_assoc()) {
         $time_array[] = $row["timestamp"];
@@ -34,7 +39,7 @@
     $today = new DateTime($today_s);
     //echo "today: ".$today_s."\n";
     if(isset($_POST['id'])){
-        $id = $_POST['id'];
+        $id = test_input($_POST['id']);
         //echo "id: ".$id."\n";
         if(!isset($_POST['startDate'])){
           $lastStatDay=getLastStatRow($conn, $id);
@@ -42,7 +47,7 @@
           $day = new DateTime($lastStatDay);
           $day->modify('+1 day');
         }else{
-          $startDay=$_POST['startDate'];
+          $startDay = test_input($_POST['startDay']);
           $day = new DateTime($startDay);
         }
         //echo "first day to processs ".$day->format("Y-m-d")."\n";

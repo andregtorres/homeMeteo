@@ -8,16 +8,16 @@
     $today = new DateTime($today_s);
     echo "today: ".$today_s."\n";
     if(isset($_POST['id'])){
-        $id = $_POST['id'];
+        $id = test_input($_POST['id']);
         if(isset($_POST['interval'])){
-          $interval = $_POST['interval'];
+          $interval = test_input($_POST['interval']);
         }
         echo "id: ".$id."\n";
         echo "interval: ".$interval."\n";
-
-        $sql = "DELETE FROM homeMeteoLogs WHERE host = ".$id." AND timestamp <= ( CURDATE() - INTERVAL ".$interval.")";
-        //echo $sql;
-        $result = $conn->query($sql);
+        $stmt = $conn->prepare("DELETE FROM homeMeteoLogs WHERE host = ? AND timestamp <= ( CURDATE() - INTERVAL ?)");
+        $stmt -> bind_param("ss", $id, $interval);
+        $stmt->execute();
+        $stmt -> close();
         echo "DELETED ROWS";
     } else {
         echo "Error - invalid host id\n";
