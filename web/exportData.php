@@ -4,9 +4,8 @@
       $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
       $stmt -> bind_param("s", $id);
       $stmt->execute();
-      //echo " DB OK got ".$result->num_rows." row.\n";
-      $row = mysqli_fetch_array($stmt, MYSQLI_ASSOC);
-      //echo "last row in stat " .$row["day"]. "\n";
+      $result = $stmt->get_result();
+      $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
       $stmt -> close();
       return($row["day"]);
     }
@@ -40,7 +39,7 @@
     //echo "today: ".$today_s."\n";
     if(isset($_POST['id'])){
         $id = test_input($_POST['id']);
-        //echo "id: ".$id."\n";
+        echo $id;
         if(!isset($_POST['startDate'])){
           $lastStatDay=getLastStatRow($conn, $id);
           //echo "last row in stat ".$lastStatDay."\n";
@@ -50,13 +49,13 @@
           $startDay = test_input($_POST['startDay']);
           $day = new DateTime($startDay);
         }
-        //echo "first day to processs ".$day->format("Y-m-d")."\n";
+        echo $id;
+        echo "first day to processs ".$day->format("Y-m-d")."\n";
         $i=0;
         while($day < $today){
           //echo "   ".$day->format("Y-m-d")."\n";
           $outJson=processDay($conn, $id, $day);
           $arr[] = ["seq"=>$i, "payload"=>$outJson];
-
           $day->modify('+1 day');
           $i++;
         }

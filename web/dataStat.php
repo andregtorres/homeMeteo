@@ -54,8 +54,9 @@
       $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
       $stmt -> bind_param("s", $id);
       $stmt->execute();
+      $result = $stmt->get_result();
       //echo " DB OK got ".$result->num_rows." row.\n";
-      $row = mysqli_fetch_array($stmt, MYSQLI_ASSOC);
+      $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
       //echo "last row in stat " .$row["day"]. "\n";
       $stmt -> close();
       return($row["day"]);
