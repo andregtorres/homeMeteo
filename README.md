@@ -25,9 +25,9 @@ The Chip uses I2C to communicate. There is already a arduino/nodeMCU library wit
 
 Connections:
 
-| ChipCap2      | NodeMCU | Wire color |
-| ----------- | ----------- | ----------- |
-| SLC      | D1       | orange|
-| VDD   | 3V        |  red|
-| VSS   | GND        | yellow|
-| SDA   | D2        | green|
+| ChipCap2      | NodeMCU | Wire color 0 | Wire color 1 |
+| ----------- | ----------- | ----------- | ----------- |
+| SLC      | D1       | orange| blue |
+| VDD   | 3V        |  red| white-blue |
+| VSS   | GND        | yellow| white-green |
+| SDA   | D2        | green| green |

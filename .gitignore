@@ -7,3 +7,4 @@ web/production/*
 web/BKP/*
 processing/data/*
 plots/*
+web/ipp/.*
