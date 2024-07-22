@@ -48,7 +48,7 @@
           $day = new DateTime($startDay);
         }
         $i=0;
-        while($day < $today){
+        while($day <= $today){
           $outJson=processDay($conn, $id, $day);
           $arr[] = ["seq"=>$i, "payload"=>$outJson];
           $day->modify('+1 day');
@@ -56,6 +56,7 @@
         }
         $outJson = json_encode($arr);
         echo $outJson;
+        echo "\n";
     } else {
         echo "Error - invalid host id\n";
       }
