@@ -19,7 +19,8 @@ https://github.com/FirebaseExtended/firebase-arduino/issues/460).
 ![pinout](Documents/NodeMcu-V3-pinout.png)
 ## ChipCap2 Wiring
 
-The Chip uses I2C to communicate. There is already a arduino/nodeMCU library with all the wrappers for the functions. Using standard pins for I2C.
+The Chip uses I2C to communicate. There is already a arduino/nodeMCU library with all the wrappers for the functions. Using standard pins for I2C.  
+The specific chip is the CC2D33-SIP (3.3V, digital, 3% accuracy).
 
 ![aaa](Documents/chipcap2.png)
 
