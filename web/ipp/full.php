@@ -1,4 +1,3 @@
-<style><?php include '../style.css'; ?></style>
 <head>
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
@@ -13,7 +12,7 @@
 
   $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 1 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
 	$sql2 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 1 AND timestamp >= ( CURDATE() - INTERVAL 1 YEAR)";
-  $result1 = $conn->query($sql1);
+  $result1 = $conn->query($sql2);
 
 
   $time_array_1 = Array();
@@ -38,41 +37,6 @@
 
   $conn->close();
   ?>
-	<?php
-	$now = new DateTime('now');
-	$then = new DateTime(end($time_array_1));
-	$interval =  $now->getTimestamp() - $then->getTimestamp();
-	$status="Ofline";
-	$color="#ff0000"; //red
-	if ($interval < 120){
-		$status="Online";
-		$color="#228b22";
-		//echo $interval;
-	}
-	//echo $status;
-	?>
-
-	<table>
-		<thead>
-				<tr>
-						<th colspan="2">Last update: <?php echo end($time_array_1);?></th>
-				</tr>
-		</thead>
-		<tbody>
-				<tr>
-						<td>Temperature:</td>
-						<td><?php echo end($temp_array_1)/100;?> &#176;C</td>
-				</tr>
-				<tr>
-						<td>Rel. humidity:</td>
-						<td><?php echo end($humi_array_1)/100;?> %</td>
-				</tr>
-		</tbody>
-	</table>
-	<span class="dot" style="background-color:<?php echo $color;?>;"></span>
-	<?php echo $status; ?>
-	<p><a href="full.php">Full data</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
-
   <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
 
   <script>
