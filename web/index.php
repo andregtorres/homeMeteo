@@ -3,6 +3,7 @@
 <head>
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+	<script src='include/jsPlots.js'></script>
   <title>HomeMeteo</title>
   <link rel="icon" type="image/png" href="favicon.png">
 </head>
@@ -12,6 +13,7 @@
   <?php
 	//Connect to database
 	include("include/dbConn.php");
+	include("include/dbQuerries.php");
 
   $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 0 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
   $result1 = $conn->query($sql1);
@@ -83,7 +85,9 @@
   } else {
     echo "0 results";
   }
-
+	//density
+	[$bins,$params]=getHistograms($conn, 0, 12);
+	$dates=array_keys(json_decode($params,true));
   $conn->close();
   ?>
   <!-- BODY HERE -->
@@ -122,8 +126,8 @@
 
 
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
-  <div id='plotlyDiv1'><!-- Plotly chart will be drawn inside this DIV --></div>
-	<div id='plotlyDiv2'><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div id='measurementsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
+	<div id='statsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<!-- as seen in https://itnext.io/how-to-stop-content-jumping-when-images-load-7c915e47f576 -->
 	 <div class="wrapper">
 		 <div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
@@ -132,176 +136,43 @@
   var times = <?php echo $json_time_1; ?>;
   var temp = <?php echo $json_temp_1; ?>.map(x=>+x/100);
   var humi = <?php echo $json_humi_1; ?>.map(x=>+x/100);
+	plotMeasurements('measurementsPlot', times, temp, humi)
 
-  var trace1 ={
-      x:times,
-      y:temp,
-      mode:'lines+markers',
-      name:'Temperature',
-      marker_color:temp,
-  };
-  var trace2 ={
-      x:times,
-      y:humi,
-      mode:'lines+markers',
-      name:'Relative humidity',
-      marker_color:humi,
-      yaxis: 'y2',
-  };
-
-  var data = [ trace1, trace2];
-
-  var layout = {
-    grid: {rows: 2, columns: 1},
-    shared_xaxes: true,
-    yaxis: {
-      title:{text: "Temperature [ºC]"},
-      row:1,
-      col:1,
-    },
-    yaxis2: {
-      title:{text: "Relative humidity [%]"},
-      row:2,
-      col:1,
-    },
-    hovermode:'x unified',
-  };
-  Plotly.newPlot('plotlyDiv1', data, layout);
-	</script>
-	<script>
   var days = <?php echo $json_day; ?>;
   var t_avg = <?php echo $json_t_avg; ?>;
-	var t_median = <?php echo $json_t_median; ?>;
-	var t_min = <?php echo $json_t_min; ?>;
-	var t_max = <?php echo $json_t_max; ?>;
 	var t_q25 = <?php echo $json_t_q25; ?>;
 	var t_q75 = <?php echo $json_t_q75; ?>;
   var h_avg = <?php echo $json_h_avg; ?>;
-	var h_median = <?php echo $json_h_median; ?>;
-	var h_min = <?php echo $json_h_min; ?>;
-	var h_max = <?php echo $json_h_max; ?>;
 	var h_q25 = <?php echo $json_h_q25; ?>;
 	var h_q75 = <?php echo $json_h_q75; ?>;
-	var d3colors = Plotly.d3.scale.category10();
 
-	var trace1 ={
-		//x:days2.concat(days,days.reverse()),
-		x:days,
-		y:t_q25,
-		//fill: "toself",
-		line: {color: "transparent"},
-		fillcolor: "rgba(31, 119, 180,0.2)",
-		name: "q25",
-		showlegend: false,
-		type: "scatter",
-		mode: 'lines',
-	};
-  var trace2 ={
-      x:days,
-      y:t_avg,
-      mode:'lines+markers',
-      name:'Temperature',
-      line: {color:d3colors(0)},
-			marker: {color:d3colors(0)},
-			fillcolor: "rgba(31, 119, 180,0.2)",
-			type: "scatter",
-			fill: "tonexty",
-  };
-	var trace3 ={
-		//x:days2.concat(days,days.reverse()),
-		x:days,
-		y:t_q75,
-		fill: "tonexty",
-		fillcolor: "rgba(31, 119, 180,0.2)",
-		line: {color: "transparent"},
-		name: "q75",
-		showlegend: false,
-		type: "scatter",
-		mode: 'lines',
-	};
-
-	var trace4 ={
-		//x:days2.concat(days,days.reverse()),
-		x:days,
-		y:h_q25,
-		//fill: "toself",
-		line: {color: "transparent"},
-		fillcolor: "rgba(255, 127, 14,0.2)",
-		name: "q25",
-		showlegend: false,
-		type: "scatter",
-		mode: 'lines',
-		yaxis: 'y2',
-	};
-	var trace5 ={
-      x:days,
-      y:h_avg,
-      mode:'lines+markers',
-      name:'Relative humidity',
-      marker_color:humi,
-      yaxis: 'y2',
-			line: {color:d3colors(1)},
-			marker: {color:d3colors(1)},
-			fillcolor: "rgba(255, 127, 14,0.2)",
-			type: "scatter",
-			fill: "tonexty",
-  };
-	var trace6 ={
-		x:days,
-		y:h_q75,
-		fill: "tonexty",
-		fillcolor: "rgba(255, 127, 14,0.2)",
-		line: {color: "transparent"},
-		name: "q75",
-		showlegend: false,
-		type: "scatter",
-		mode: 'lines',
-		yaxis: 'y2',
-	};
-	var trace7 ={
-      x:days,
-      y:h_median,
-      mode:'lines+markers',
-      name:'Median',
-      yaxis: 'y2',
-			line: {color:d3colors(2)},
-			marker: {color:d3colors(2)},
-			type: "scatter",
-  };
-  var data = [trace1, trace2, trace3, trace4, trace5, trace6];
-
-  var layout = {
-    grid: {rows: 2, columns: 1},
-    shared_xaxes: true,
-    yaxis: {
-      title:{text: "Temperature [ºC]"},
-      row:1,
-      col:1,
-    },
-    yaxis2: {
-      title:{text: "Relative humidity [%]"},
-      row:2,
-      col:1,
-    },
-    hovermode:'closest',
-  };
+	plotStats('statsPlot', days,t_avg,t_q25,t_q75,h_avg,h_q25,h_q75);
   //https://plotly.com/javascript/hover-events/
-  var myPlot = document.getElementById('plotlyDiv2'),
+  var myPlot = document.getElementById('statsPlot'),
     hoverInfo = document.getElementById('hoverinfo');
 
-  Plotly.newPlot('plotlyDiv2', data, layout);
-  myPlot.on('plotly_hover', function(data){
-    hoverInfo.innerHTML = '';
-    var infotext = data.points.map(function(d){
-      return('<img src="plots/homeMeteo_full_'+data.points[0].x+'.png" alt="'+data.points[0].x+'" onerror="this.onerror=null; this.src=\'plots/notFound.jpg\'">');
-      });
+	var bins = <?php echo $bins; ?>;
+	var histParams = <?php echo $params; ?>;
+	var dates = <?php echo json_encode($dates); ?>;
 
+  myPlot.on('plotly_hover', function(data){
+		hoverInfo.innerHTML = '';
+    var infotext = data.points.map(function(d){
+			date = data.points[0].x;
+			if (dates.includes(date)) {
+				return('<div style="height: 800px; max-width:800;" id="densityPlot">');
+			} else {
+				return('<img src="plots/homeMeteo_full_'+data.points[0].x+'.png" alt="'+data.points[0].x+'" onerror="this.onerror=null; this.src=\'plots/notFound.jpg\'">');
+			}
+		});
     hoverInfo.innerHTML = infotext.join('<br/>');
+		if (dates.includes(date)) {
+			plotDensity("densityPlot",date, bins, histParams);
+		}
   })
   .on('plotly_unhover', function(data){
     //hoverInfo.innerHTML = '';
   });
-
 
 	</script>
 </body>

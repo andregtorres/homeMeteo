@@ -52,4 +52,34 @@
     return [$json_bins_2d,$json_histParams];
   }
 
+  function getHistograms($conn, $id, $months){
+    $bins  = array();
+    $params = array();
+    $sql1 = "SELECT
+							B.temp, B.humi, B.measurements, B.date,
+							H.acq_time,
+							H.x_min, H.x_max, H.dx, H.Nx,
+							H.y_min, H.y_max, H.dy, H.Ny
+							FROM homeMeteoBins as B
+							INNER JOIN homeMeteoHistograms as H
+							ON B.id_hist = H.id_hist
+							WHERE H.id_host = ".$id."
+							AND B.date > DATE(NOW()) - INTERVAL ".$months." MONTH
+              ORDER BY B.id_bins ASC";
+
+	  $result1 = $conn->query($sql1);
+	  while($row = $result1->fetch_array(MYSQLI_ASSOC)) {
+  		$x=array_map('intval', explode(" ", $row["temp"]));
+			$y=array_map('intval', explode(" ", $row["humi"]));
+			$z=array_map('intval', explode(" ", $row["measurements"]));
+			$bins_2d=decompress2d($x,$y, $z,$row["Nx"],$row["Ny"]);
+			$histParams = array("x_min"=>$row["x_min"],"x_max"=>$row["x_max"],"dx"=>$row["dx"],
+																						"y_min"=>$row["y_min"],"y_max"=>$row["y_max"],"dy"=>$row["dy"]);
+
+      $bins[$row["date"]]=$bins_2d;
+      $params[$row["date"]]=$histParams;
+    }
+	  return [json_encode($bins),json_encode($params)];
+  }
+
 ?>
