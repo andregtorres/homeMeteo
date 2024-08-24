@@ -1,16 +1,5 @@
 <?php
 
-    function getLastStatRow($conn, $id){
-      $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
-      $stmt -> bind_param("s", $id);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      //$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-      $row = $result->fetch_assoc();
-      $stmt -> close();
-      return($row["day"]);
-    }
-
     function processDay($conn, $id, $day_input){
       $nextDay=clone $day_input;
       $nextDay->modify('+1 day');
@@ -32,6 +21,7 @@
 
     //Connect to database
     include("include/dbConn.php");
+    include("include/dbQuerries.php");
 
     //Get current date
     //$today = new DateTime('now');

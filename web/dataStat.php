@@ -50,17 +50,6 @@
       return sqrt((1 / (count($Array) - 1)) * $sum);
     }
 
-    function getLastStatRow($conn, $id){
-      $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
-      $stmt -> bind_param("s", $id);
-      $stmt->execute();
-      $result = $stmt->get_result();
-      //echo " DB OK got ".$result->num_rows." row.\n";
-      $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-      //echo "last row in stat " .$row["day"]. "\n";
-      $stmt -> close();
-      return($row["day"]);
-    }
 
     function processDay($conn, $id, $day_input){
       $nextDay=clone $day_input;
@@ -92,21 +81,11 @@
       //echo "t_avg=".$t_avg." t_std=".$t_std." t_median=".$t_median."t_min=".$t_min." t_max=".$t_max." t_q25=".$t_q25." t_q75=".$t_q75."\n";
       return[$t_min,$t_max,$t_avg,$t_std,$t_median,$t_q25,$t_q75,$h_min,$h_max,$h_avg,$h_std,$h_median,$h_q25,$h_q75];
     }
-    function checkDay($conn, $id, $day_input){
-      $nextDay=clone $day_input;
-      $nextDay->modify('+1 day');
-      $stmt = $conn->prepare("SELECT * FROM homeMeteoLogs WHERE (host = ? AND timestamp >= ?  AND timestamp < ? )");
-      $stmt -> bind_param("sss", $id, $day_input->format("Y-m-d H:i:s"), $nextDay->format("Y-m-d H:i:s"));
-      $stmt->execute();
-      $result = $stmt->get_result();
-      $stmt -> close();
-      echo "DB OK got ".$result->num_rows." rows.\n";
-      return($result->num_rows>0);
-    }
 
 
     //Connect to database
     include("include/dbConn.php");
+    include("include/dbQuerries.php");
 
     //Get current date
     //$today = new DateTime('now');
