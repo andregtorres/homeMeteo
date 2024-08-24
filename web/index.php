@@ -126,8 +126,8 @@
 
 
 	<p><a href="full.php">Full data</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
-  <div id='measurementsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
-	<div id='statsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div style="height: 600px; max-width:1000;" id='measurementsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
+	<div style="height: 600px; max-width:1000;" id='statsPlot'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<!-- as seen in https://itnext.io/how-to-stop-content-jumping-when-images-load-7c915e47f576 -->
 	 <div class="wrapper">
 		 <div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
