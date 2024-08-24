@@ -8,9 +8,9 @@
 	curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'id=' -d 'date='  https://homemeteo.atorres.eu/binData.php
 	*/
 	//Connect to database
-	include("include/dbConn.php");
-	//include("include/histogramFunctions.php"); dbQuerries already includes
-	include("include/dbQuerries.php");
+	include("../include/dbConn.php");
+	//include("../include/histogramFunctions.php"); dbQuerries already includes
+	include("../include/dbQuerries.php");
 
 	$today_s = date("Y-m-d");
 	$today = new DateTime($today_s);

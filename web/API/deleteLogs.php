@@ -1,6 +1,6 @@
 <?php
     //Connect to database
-    include("include/dbConn.php");
+    include("../include/dbConn.php");
 
     $interval = "5";
     //Get current date

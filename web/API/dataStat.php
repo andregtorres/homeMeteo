@@ -84,8 +84,8 @@
 
 
     //Connect to database
-    include("include/dbConn.php");
-    include("include/dbQuerries.php");
+    include("../include/dbConn.php");
+    include("../include/dbQuerries.php");
 
     //Get current date
     //$today = new DateTime('now');

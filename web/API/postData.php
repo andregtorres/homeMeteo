@@ -1,6 +1,6 @@
 <?php
     //Connect to database
-    include("include/dbConn.php");
+    include("../include/dbConn.php");
 
     //Get current date and time
     $timestamp = date("Y-m-d H:i:s");
