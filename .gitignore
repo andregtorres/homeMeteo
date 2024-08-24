@@ -3,7 +3,6 @@ nodeMCU/*/password.h
 nodeMCU/production/*
 
 #web
-web/BKP/*
 web/ipp/.*
 web/production/*
 
@@ -11,6 +10,10 @@ web/production/*
 processing/data/*
 plots/*
 *.pw
+
+#Backups
+BKP/*
+web/BKP/*
 
 #other
 node_modules/*
