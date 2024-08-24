@@ -13,8 +13,7 @@ https://web.tecnico.ulisboa.pt/~andregtorres/homeMeteo/)
 
 ## NodeMCU
 
-For my old node MCU boards, I had to downgrade the Esp Board Driver to 2.3.0 as seen [here](
-https://github.com/FirebaseExtended/firebase-arduino/issues/460).
+Compiling as a generic ESP8266 with version 2.7.4 of the library.
 
 ![pinout](Documents/NodeMcu-V3-pinout.png)
 ## ChipCap2 Wiring

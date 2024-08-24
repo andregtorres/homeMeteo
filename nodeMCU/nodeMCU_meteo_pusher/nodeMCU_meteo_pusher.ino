@@ -4,16 +4,14 @@
 #include "CFF_ChipCap2.h"
 
 //DEFINITIONS
-#define ssid "NETWORK_ID_GOES_HERE"
-#define password "WIFI_PW_GOES_HERE"
-#define srv_adress "http://server/homeMeteo/postData.php"
-#define session_id 99 //change number acordingly
+#include "password.h"  //defines SRV_ADDRESS, SSID, PASSWORD, HTTP_USER, HTTP_PW
+#define HOST_ID 0  //change number acordingly
 
 //initializations
 int i =0;
 unsigned long lastTime = 0;
-unsigned long timerDelay = 10000; // Set timer to 10 seconds
-unsigned short id = session_id;
+unsigned long timerDelay = 60000; // Set timer to 10 seconds
+unsigned short id = HOST_ID;
 CFF_ChipCap2 cc2 = CFF_ChipCap2();
 
 //function to connect to wifi
@@ -21,7 +19,7 @@ void connectWifi(){
   WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
   delay(100);
   WiFi.mode(WIFI_STA);        //This line hides the viewing of ESP as wifi hotspot
-  WiFi.begin(ssid, password);     //Connect to your WiFi router
+  WiFi.begin(SSID, PASSWORD);     //Connect to your WiFi router
   Serial.println("");
   Serial.print("Connecting");
   // Wait for connection
@@ -31,7 +29,7 @@ void connectWifi(){
   }
   //If connection successful show IP address in serial monitor
   Serial.print("Connected to ");
-  Serial.println(ssid);
+  Serial.println(SSID);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  //IP address assigned to your ESP
 }
@@ -43,7 +41,8 @@ void pushData(unsigned int &temp, unsigned int &humi) {
   String postData;
   postData = "id="+String(id)+"&temp="+String(temp)+"&humi="+String(humi);
 
-  http.begin(srv_adress);              //change the ip to your computer ip address
+  http.begin(SRV_ADDRESS);              //change the ip to your computer ip address
+  http.setAuthorization(HTTP_USER, HTTP_PW);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
 
   //int httpCode = http.GET();
@@ -52,7 +51,7 @@ void pushData(unsigned int &temp, unsigned int &humi) {
 
   Serial.print("http: ");
   Serial.println(httpCode);   //Print HTTP return code
-  //Serial.println(payload);    //Print request response payload
+  Serial.println(payload);    //Print request response payload
 
   http.end();  //Close connection
 }
