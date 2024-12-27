@@ -15,7 +15,9 @@
 	include("include/dbConn.php");
 	include("include/dbQuerries.php");
 
-  $sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 0 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
+	$hasData = 1;
+
+	$sql1 = "SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = 0 AND timestamp >= ( CURDATE() - INTERVAL 1 DAY)";
   $result1 = $conn->query($sql1);
 
 
@@ -31,13 +33,15 @@
       $temp_array_1[] = $row["temp"];
       $humi_array_1[] = $row["humi"];
     }
-    //convert the PHP array into JSON format, so it works with javascript
-    $json_time_1 = json_encode($time_array_1);
-    $json_temp_1 = json_encode($temp_array_1);
-    $json_humi_1 = json_encode($humi_array_1);
+
   } else {
     echo "0 results";
+		$hasData=0;
   }
+	//convert the PHP array into JSON format, so it works with javascript
+	$json_time_1 = json_encode($time_array_1);
+	$json_temp_1 = json_encode($temp_array_1);
+	$json_humi_1 = json_encode($humi_array_1);
 
 	#stats
 	#CREATE TABLE homeMeteoStats( day DATE, id TINYINT UNSIGNED,
@@ -133,46 +137,48 @@
 		 <div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
 	</div>
 	<script>
-  var times = <?php echo $json_time_1; ?>;
-  var temp = <?php echo $json_temp_1; ?>.map(x=>+x/100);
-  var humi = <?php echo $json_humi_1; ?>.map(x=>+x/100);
-	plotMeasurements('measurementsPlot', times, temp, humi)
-
-  var days = <?php echo $json_day; ?>;
-  var t_avg = <?php echo $json_t_avg; ?>;
-	var t_q25 = <?php echo $json_t_q25; ?>;
-	var t_q75 = <?php echo $json_t_q75; ?>;
-  var h_avg = <?php echo $json_h_avg; ?>;
-	var h_q25 = <?php echo $json_h_q25; ?>;
-	var h_q75 = <?php echo $json_h_q75; ?>;
-
-	plotStats('statsPlot', days,t_avg,t_q25,t_q75,h_avg,h_q25,h_q75);
-  //https://plotly.com/javascript/hover-events/
-  var myPlot = document.getElementById('statsPlot'),
-    hoverInfo = document.getElementById('hoverinfo');
-
-	var bins = <?php echo $bins; ?>;
-	var histParams = <?php echo $params; ?>;
-	var dates = <?php echo json_encode($dates); ?>;
-
-  myPlot.on('plotly_hover', function(data){
-		hoverInfo.innerHTML = '';
-    var infotext = data.points.map(function(d){
-			date = data.points[0].x;
-			if (dates.includes(date)) {
-				return('<div style="height: 800px; max-width:800;" id="densityPlot">');
-			} else {
-				return('<img src="plots/homeMeteo_full_'+data.points[0].x+'.png" alt="'+data.points[0].x+'" onerror="this.onerror=null; this.src=\'plots/notFound.jpg\'">');
-			}
-		});
-    hoverInfo.innerHTML = infotext.join('<br/>');
-		if (dates.includes(date)) {
-			plotDensity("densityPlot",date, bins, histParams);
+		var hasData= <?php echo $hasData; ?>;
+		if (hasData === 1) {
+			var times = <?php echo $json_time_1; ?>;
+		  var temp = <?php echo $json_temp_1; ?>.map(x=>+x/100);
+		  var humi = <?php echo $json_humi_1; ?>.map(x=>+x/100);
+			plotMeasurements('measurementsPlot', times, temp, humi)
 		}
-  })
-  .on('plotly_unhover', function(data){
-    //hoverInfo.innerHTML = '';
-  });
+	  var days = <?php echo $json_day; ?>;
+	  var t_avg = <?php echo $json_t_avg; ?>;
+		var t_q25 = <?php echo $json_t_q25; ?>;
+		var t_q75 = <?php echo $json_t_q75; ?>;
+	  var h_avg = <?php echo $json_h_avg; ?>;
+		var h_q25 = <?php echo $json_h_q25; ?>;
+		var h_q75 = <?php echo $json_h_q75; ?>;
+
+		plotStats('statsPlot', days,t_avg,t_q25,t_q75,h_avg,h_q25,h_q75);
+	  //https://plotly.com/javascript/hover-events/
+	  var myPlot = document.getElementById('statsPlot'),
+	    hoverInfo = document.getElementById('hoverinfo');
+
+		var bins = <?php echo $bins; ?>;
+		var histParams = <?php echo $params; ?>;
+		var dates = <?php echo json_encode($dates); ?>;
+
+	  myPlot.on('plotly_hover', function(data){
+			hoverInfo.innerHTML = '';
+	    var infotext = data.points.map(function(d){
+				date = data.points[0].x;
+				if (dates.includes(date)) {
+					return('<div style="height: 800px; max-width:800;" id="densityPlot">');
+				} else {
+					return('<img src="plots/homeMeteo_full_'+data.points[0].x+'.png" alt="'+data.points[0].x+'" onerror="this.onerror=null; this.src=\'plots/notFound.jpg\'">');
+				}
+			});
+	    hoverInfo.innerHTML = infotext.join('<br/>');
+			if (dates.includes(date)) {
+				plotDensity("densityPlot",date, bins, histParams);
+			}
+	  })
+	  .on('plotly_unhover', function(data){
+	    //hoverInfo.innerHTML = '';
+	  });
 
 	</script>
 </body>
