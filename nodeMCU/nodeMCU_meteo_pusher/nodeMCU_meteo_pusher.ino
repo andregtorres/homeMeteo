@@ -5,7 +5,7 @@
 
 //DEFINITIONS
 #include "password.h"  //defines SRV_ADDRESS, SSID, PASSWORD, HTTP_USER, HTTP_PW
-#define HOST_ID 0  //change number acordingly
+#define HOST_ID 2  //change number acordingly
 
 //initializations
 int i =0;

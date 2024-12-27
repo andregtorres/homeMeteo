@@ -5,6 +5,7 @@ nodeMCU/production/*
 #web
 web/ipp/.*
 web/production/*
+web/include/dbConn_local.php
 
 #processing
 processing/data/*
