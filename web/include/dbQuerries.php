@@ -1,6 +1,37 @@
 <?php
   include("histogramFunctions.php");
 
+  function getDaysById($conn, $id, $days) {
+    $days--;
+
+    $time_array = Array();
+    $temp_array = Array();
+    $humi_array = Array();
+
+    if (!$conn){
+       echo 'Connection attempt failed.<br>';
+    }
+    $stmt= $conn->prepare("SELECT timestamp, temp, humi FROM homeMeteoLogs WHERE host = ? AND timestamp >= CURRENT_DATE() - INTERVAL ? DAY  ORDER BY 'timestamp'");
+    $stmt -> bind_param("ss", $id, $days);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result) {
+     // output data of each row
+     while($row = $result->fetch_assoc()) {
+       $time_array[] = $row["timestamp"];
+       $temp_array[] = $row["temp"]/100;
+       $humi_array[] = $row["humi"]/100;
+     }
+    }else{
+      echo "No results<br>";
+    }
+    //convert the PHP array into JSON format, so it works with javascript
+    $json_time = json_encode($time_array);
+    $json_temp = json_encode($temp_array);
+    $json_humi = json_encode($humi_array);
+    return [$json_time, $json_temp, $json_humi];
+  }
+
   function getLastStatRow($conn, $id){
     $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
     $stmt -> bind_param("s", $id);
