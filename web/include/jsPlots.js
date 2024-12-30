@@ -4,14 +4,12 @@ function plotMeasurements(divName, times, temp, humi){
       y:temp,
       mode:'lines+markers',
       name:'Temperature',
-      marker_color:temp,
   };
   var trace2 ={
       x:times,
       y:humi,
       mode:'lines+markers',
       name:'Relative humidity',
-      marker_color:humi,
       yaxis: 'y2',
   };
 
@@ -92,7 +90,6 @@ function plotStats(divName, days, t_avg, t_q25, t_q75, h_avg, h_q25, h_q75){
       y:h_avg,
       mode:'lines+markers',
       name:'Relative humidity',
-      marker_color:humi,
       yaxis: 'y2',
       line: {color:d3colors(1)},
       marker: {color:d3colors(1)},
