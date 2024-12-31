@@ -39,19 +39,31 @@
 		$nextDay->modify('+1 day');
 		$sql1 = "SELECT timestamp, temp, humi
 							FROM homeMeteoLogs
-							WHERE host = 0
+							WHERE host = ?
 							AND timestamp >= '". $day->format('Y-m-d H:i:s') .
 							"' AND timestamp < '". $nextDay->format('Y-m-d H:i:s') . "'";
 		$sql2 = "SELECT *
 							FROM homeMeteoHistograms
-							WHERE id_host = 0
+							WHERE id_host = ?
 							AND from_date <= (CURDATE()- INTERVAL 4 DAY)
 							AND (to_date >= CURDATE()- INTERVAL 3 DAY
 							OR to_date IS NULL)";
 		$sql3 = "INSERT INTO homeMeteoBins (id_hist,date,measurements,temp,humi)
 							VALUES (?,?,?,?,?)";
-		$result1 = $conn->query($sql1);
-		$result2 = $conn->query($sql2);
+		$stmt1 = $conn->prepare($sql1);
+		$stmt1 -> bind_param("s", $id);
+		$stmt2 = $conn->prepare($sql2);
+		$stmt2 -> bind_param("s", $id);
+
+		$stmt1->execute();
+		$result1 = $stmt1->get_result();
+		$stmt1 -> close();
+		$stmt2->execute();
+		$result2 = $stmt2->get_result();
+		$stmt2 -> close();
+		#$result1 = $conn->query($sql1);
+		#$result2 = $conn->query($sql2);
+
 		$histParams = $result2->fetch_assoc();
 
 		$time_array = Array();
@@ -78,7 +90,7 @@
 			$stmt -> close();
 			echo "DB OK - INSERTED DAY\n";
 		}else {
-			echo "No resuts, skipping";
+			echo "No resuts, skipping\n";
 		}
 		$day->modify('+1 day');
 	}

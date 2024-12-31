@@ -96,11 +96,16 @@
         $id = test_input($_POST['id']);
         echo "id: ".$id."\n";
 
-        $lastStatDay=getLastStatRow($conn, $id);
-        echo "last row in stat ".$lastStatDay."\n";
+        if(!isset($_POST['date'])){
+          $lastStatDay=getLastStatRow($conn, $id);
+          echo "last row in stat ".$lastStatDay."\n";
 
-        $day = new DateTime($lastStatDay);
-        $day->modify('+1 day');
+          $day = new DateTime($lastStatDay);
+          $day->modify('+1 day');
+        }else{
+          $inputDay = test_input($_POST['date']);
+          $day = new DateTime($inputDay);
+        }
         echo "first day to processs ".$day->format("Y-m-d")."\n";
         while($day < $today){
           echo "   ".$day->format("Y-m-d")."\n";
