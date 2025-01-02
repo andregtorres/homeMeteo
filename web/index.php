@@ -53,6 +53,13 @@
 				$plot[]=false;
 			}
 		}
+
+		//STATS
+		$stats=array();
+		for ($i=0; $i < $N_devices; $i++) {
+			$stats[]= getStatsById($conn, $devices[$i]["host_id"], 1);
+		}
+
 		$conn->close();
   ?>
 	<table border="1">
@@ -85,28 +92,32 @@
 	</table>
 	<br>
 	<div id='plotlyDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+	<h2>Statistics:</h2>
+	<div id='plotlyStatsDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<script>
+		const colors = [
+			'#5988ff',
+			'#ff8559',
+			'#59ff8b',
+			'#bd59ff',
+			'#17becf'
+		];
+		const colorsTransp = [
+			'rgba(89, 136, 255,0.2)',
+			'rgba(255, 133, 89,0.2)',
+			'rgba(89, 255, 139,0.2)',
+			'rgba(189, 89, 255,0.2)',
+			'rgba(23, 190, 207,0.2)'
+		];
 		function onChangeDevices(){
 			var checkedBoxes = document.querySelectorAll('input[name=plotDevice]');
 			for (var i = 0; i < checkedBoxes.length; i++) {
-				console.log(checkedBoxes[i].checked);
 				plots[i]=checkedBoxes[i].checked;
 			}
 			doPlot();
+			doPlotStats();
 		}
 		function doPlot(){
-			const colors = [
-			  '#1f77b4',
-			  '#ff7f0e',
-			  '#2ca02c',
-			  '#d62728',
-			  '#9467bd',
-			  '#8c564b',
-			  '#e377c2',
-			  '#7f7f7f',
-			  '#bcbd22',
-			  '#17becf'
-			];
 			var data=[];
 			for (var i = 0; i < N_devices ; i++) {
 				var trace1 ={
@@ -151,6 +162,107 @@
 			Plotly.newPlot('plotlyDiv', data, layout);
 		}
 
+		function doPlotStats(){
+		  var d3colors = Plotly.d3.scale.category10();
+			var dataStats=[];
+			for (var i = 0; i < N_devices ; i++) {
+				var devStats=JSON.parse(stats[i.toString()])
+				var trace1 ={
+			    x:devStats["day"],
+			    y:devStats["t_q25"],
+			    line: {color: "transparent"},
+			    fillcolor: colorsTransp[i],
+			    name: "q25",
+			    showlegend: false,
+			    type: "scatter",
+			    mode: 'lines',
+					hoverinfo:"x+y"
+			  };
+			  var trace2 ={
+			    x:devStats["day"],
+			    y:devStats["t_avg"],
+			    mode:'lines+markers',
+			    name:labels[i],
+			    line: {color:colors[i]},
+			    marker: {color:colors[i]},
+			    fillcolor: colorsTransp[i],
+			    type: "scatter",
+			    fill: "tonexty",
+					hoverinfo:"x+y"
+			  };
+			  var trace3 ={
+			    x:devStats["day"],
+			    y:devStats["t_q75"],
+			    fill: "tonexty",
+			    fillcolor: colorsTransp[i],
+			    line: {color: "transparent"},
+			    name: "q75",
+			    showlegend: false,
+			    type: "scatter",
+			    mode: 'lines',
+					hoverinfo:"x+y"
+			  };
+
+			  var trace4 ={
+					x:devStats["day"],
+			    y:devStats["h_q25"],
+			    line: {color: "transparent"},
+			    fillcolor: colorsTransp[i],
+			    name: "q25",
+			    showlegend: false,
+			    type: "scatter",
+			    mode: 'lines',
+			    yaxis: 'y2',
+					hoverinfo:"x+y"
+			  };
+			  var trace5 ={
+					x:devStats["day"],
+					y:devStats["h_avg"],
+			    mode:'lines+markers',
+			    yaxis: 'y2',
+			    line: {color:colors[i]},
+			    marker: {color:colors[i]},
+			    fillcolor: colorsTransp[i],
+					showlegend: false,
+			    type: "scatter",
+			    fill: "tonexty",
+					hoverinfo:"x+y"
+			  };
+			  var trace6 ={
+					x:devStats["day"],
+			    y:devStats["h_q75"],
+			    fill: "tonexty",
+			    fillcolor: colorsTransp[i],
+			    line: {color: "transparent"},
+			    name: "q75",
+			    showlegend: false,
+			    type: "scatter",
+			    mode: 'lines',
+			    yaxis: 'y2',
+					hoverinfo:"x+y"
+			  };
+				if (plots[i]){
+					dataStats.push(trace1,trace2,trace3,trace4,trace5,trace6);
+				}
+			}
+		  var layout = {
+		    grid: {rows: 2, columns: 1},
+		    shared_xaxes: true,
+		    yaxis: {
+		      title:{text: "Temperature [ºC]"},
+		      row:1,
+		      col:1,
+		    },
+		    yaxis2: {
+		      title:{text: "Relative humidity [%]"},
+		      row:2,
+		      col:1,
+		    },
+		    hovermode:'closest',
+		  };
+		  Plotly.newPlot('plotlyStatsDiv', dataStats, layout);
+		}
+
 		//PLOTS
 		var N_devices= <?php echo $N_devices; ?>;
 		var times=[];
@@ -158,16 +270,27 @@
 		var humi=[];
 		var labels=[];
 		var plots=[];
+		//stats
+		var days=[];
+		var t_avg=[];
+		var t_q25=[];
+		var t_q75=[];
+		var h_avg=[];
+		var h_q25=[];
+		var h_q75=[];
 		<?php
 			for ($i=0; $i < $N_devices; $i++) {
 				echo "times.push(".$times[$i].");\n";
 				echo "temp.push(".$temp[$i].");\n";
 				echo "humi.push(".$humi[$i].");\n";
 				echo "plots.push(".$plot[$i].");\n";
-				echo "labels.push('".$devices[$i]["device_location"]."');";
+				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
 		doPlot()
+		var stats= <?php echo json_encode($stats) ?>;
+		doPlotStats()
+
 	</script>
 
 </body>

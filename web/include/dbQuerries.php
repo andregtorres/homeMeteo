@@ -32,6 +32,115 @@
     return [$json_time, $json_temp, $json_humi];
   }
 
+  function getStatsById($conn, $id, $years) {
+    #CREATE TABLE homeMeteoStats( day DATE, id TINYINT UNSIGNED,
+    #        t_avg DOUBLE, t_std DOUBLE, t_median DOUBLE, t_min DOUBLE, t_max DOUBLE, t_q25 DOUBLE, t_q75 DOUBLE
+    #        h_avg DOUBLE, h_std DOUBLE, h_median DOUBLE, h_min DOUBLE, h_max DOUBLE, h_q25 DOUBLE, h_q75 DOUBLE);
+    $sql = "SELECT day, t_avg, t_q25, t_q75,
+            h_avg, h_q25, h_q75
+            FROM homeMeteoStats WHERE id = ?  AND
+            day >= ( CURDATE() - INTERVAL ? YEAR) ORDER BY day";
+    $stmt= $conn->prepare($sql);
+    $stmt -> bind_param("ss", $id, $years);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt -> close();
+    if ($result->num_rows > 0) {
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+        $day_array[] = $row["day"];
+        $t_avg_array[] = $row["t_avg"];
+        $t_q25_array[] = $row["t_q25"];
+        $t_q75_array[] = $row["t_q75"];
+        $h_avg_array[] = $row["h_avg"];
+        $h_q25_array[] = $row["h_q25"];
+        $h_q75_array[] = $row["h_q75"];
+      }
+    } else {
+      echo "No statistics for id ". $id . "<br>";
+    }
+    //convert the PHP array into JSON format, so it works with javascript
+    //$json_day = json_encode($day_array);
+    //$json_t_avg = json_encode($t_avg_array);
+    //$json_t_q25 = json_encode($t_q25_array);
+    //$json_t_q75 = json_encode($t_q75_array);
+    //$json_h_avg = json_encode($h_avg_array);
+    //$json_h_q25 = json_encode($h_q25_array);
+    //$json_h_q75 = json_encode($h_q75_array);
+    //return [$json_day, $json_t_avg, $json_t_q25, $json_t_q75, $json_h_avg, $json_h_q25, $json_h_q75];
+    $json_stats = json_encode(array("day"=>$day_array,"t_avg"=>$t_avg_array,"t_q25"=>$t_q25_array,"t_q75"=>$t_q75_array,"h_avg"=>$h_avg_array,"h_q25"=>$h_q25_array,"h_q75"=>$h_q75_array));
+    return [$json_stats];
+  }
+  function getStatsById_full($conn, $id, $years) {
+    $day_array[] 	 		= Array();
+    $t_avg_array[] 		= Array();
+    $t_std_array[] 		= Array();
+    $t_median_array[] = Array();
+    $t_min_array[] 		= Array();
+    $t_max_array[] 		= Array();
+    $t_q25_array[] 		= Array();
+    $t_q75_array[] 		= Array();
+    $h_avg_array[] 		= Array();
+    $h_std_array[] 		= Array();
+    $h_median_array[] = Array();
+    $h_min_array[] 		= Array();
+    $h_max_array[] 		= Array();
+    $h_q25_array[] 		= Array();
+    $h_q75_array[] 		= Array();
+    #CREATE TABLE homeMeteoStats( day DATE, id TINYINT UNSIGNED,
+    #        t_avg DOUBLE, t_std DOUBLE, t_median DOUBLE, t_min DOUBLE, t_max DOUBLE, t_q25 DOUBLE, t_q75 DOUBLE
+    #        h_avg DOUBLE, h_std DOUBLE, h_median DOUBLE, h_min DOUBLE, h_max DOUBLE, h_q25 DOUBLE, h_q75 DOUBLE);
+    $sql = "SELECT day, t_avg, t_std, t_median, t_min, t_max, t_q25, t_q75,
+            h_avg, h_std, h_median, h_min, h_max, h_q25, h_q75
+            FROM homeMeteoStats WHERE id = ?  AND
+            day >= ( CURDATE() - INTERVAL ? YEAR) ORDER BY day";
+    $stmt= $conn->prepare($sql);
+    $stmt -> bind_param("ss", $id, $years);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt -> close();
+    if ($result->num_rows > 0) {
+      // output data of each row
+      while($row = $result->fetch_assoc()) {
+        $day_array[] = $row["day"];
+        $t_avg_array[] = $row["t_avg"];
+        $t_std_array[] = $row["t_std"];
+        $t_median_array[] = $row["t_median"];
+        $t_min_array[] = $row["t_min"];
+        $t_max_array[] = $row["t_max"];
+        $t_q25_array[] = $row["t_q25"];
+        $t_q75_array[] = $row["t_q75"];
+        $h_avg_array[] = $row["h_avg"];
+        $h_std_array[] = $row["h_std"];
+        $h_median_array[] = $row["h_median"];
+        $h_min_array[] = $row["h_min"];
+        $h_max_array[] = $row["h_max"];
+        $h_q25_array[] = $row["h_q25"];
+        $h_q75_array[] = $row["h_q75"];
+
+      }
+    } else {
+      echo "No statistics for id ". $id . "<br>";
+    }
+    //convert the PHP array into JSON format, so it works with javascript
+    $json_day = json_encode($day_array);
+    $json_t_avg = json_encode($t_avg_array);
+    $json_t_std = json_encode($t_std_array);
+    $json_t_median = json_encode($t_median_array);
+    $json_t_min = json_encode($t_min_array);
+    $json_t_max = json_encode($t_max_array);
+    $json_t_q25 = json_encode($t_q25_array);
+    $json_t_q75 = json_encode($t_q75_array);
+    $json_h_avg = json_encode($h_avg_array);
+    $json_h_std = json_encode($h_std_array);
+    $json_h_median = json_encode($h_median_array);
+    $json_h_min = json_encode($h_min_array);
+    $json_h_max = json_encode($h_max_array);
+    $json_h_q25 = json_encode($h_q25_array);
+    $json_h_q75 = json_encode($h_q75_array);
+    return [$json_day, $json_t_avg, $json_t_std, $json_t_median, $json_t_min, $json_t_max, $json_t_q25, $json_t_q75, $json_h_avg, $json_h_std, $json_h_median, $json_h_min, $json_h_max, $json_h_q25, $json_h_q75];
+  }
+
   function getLastStatRow($conn, $id){
     $stmt = $conn->prepare("SELECT * FROM homeMeteoStats WHERE id =? ORDER BY day DESC LIMIT 1");
     $stmt -> bind_param("s", $id);
