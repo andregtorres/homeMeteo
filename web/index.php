@@ -2,6 +2,7 @@
 <head>
 	<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+	<script src='include/jsPlots.js'></script>
 	<title>HomeMeteo</title>
   <link rel="icon" type="image/png" href="favicon.png">
 </head>
@@ -59,7 +60,13 @@
 		for ($i=0; $i < $N_devices; $i++) {
 			$stats[]= getStatsById($conn, $devices[$i]["host_id"], 1);
 		}
-
+		//DENSITY
+		//$hists=array();
+		//for ($i=0; $i < $N_devices; $i++) {
+			//[$bins,$params]==getHistograms($conn, $i, 24);
+			//$hist_dates=array_keys(json_decode($params,true));
+			//$hists[]=[$hist_dates,$bins,$params];
+		//}
 		$conn->close();
   ?>
 	<table border="1">
@@ -95,172 +102,14 @@
 	<h2>Statistics:</h2>
 	<div id='plotlyStatsDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<script>
-		const colors = [
-			'#5988ff',
-			'#ff8559',
-			'#59ff8b',
-			'#bd59ff',
-			'#17becf'
-		];
-		const colorsTransp = [
-			'rgba(89, 136, 255,0.2)',
-			'rgba(255, 133, 89,0.2)',
-			'rgba(89, 255, 139,0.2)',
-			'rgba(189, 89, 255,0.2)',
-			'rgba(23, 190, 207,0.2)'
-		];
+
 		function onChangeDevices(){
 			var checkedBoxes = document.querySelectorAll('input[name=plotDevice]');
 			for (var i = 0; i < checkedBoxes.length; i++) {
 				plots[i]=checkedBoxes[i].checked;
 			}
-			doPlot();
-			doPlotStats();
-		}
-		function doPlot(){
-			var data=[];
-			for (var i = 0; i < N_devices ; i++) {
-				var trace1 ={
-						x:times[i],
-						y:temp[i],
-						mode:'lines+markers',
-						name:labels[i],
-						marker: {
-							color:colors[i],
-						},
-				};
-				var trace2 ={
-						x:times[i],
-						y:humi[i],
-						mode:'lines+markers',
-						name: labels[i],
-						yaxis: 'y2',
-						marker: {
-							color:colors[i],
-						},
-						showlegend: false,
-				};
-				if (plots[i]){
-					data.push(trace1,trace2);
-				}
-
-			}
-			var layout = {
-				grid: {rows: 2, columns: 1},
-				shared_xaxes: true,
-				yaxis: {
-					title:{text: "Temperature [ºC]"},
-					row:1,
-					col:1,
-				},
-				yaxis2: {
-					title:{text: "Relative humidity [%]"},
-					row:2,
-					col:1,
-				},
-			};
-			Plotly.newPlot('plotlyDiv', data, layout);
-		}
-
-		function doPlotStats(){
-		  var d3colors = Plotly.d3.scale.category10();
-			var dataStats=[];
-			for (var i = 0; i < N_devices ; i++) {
-				var devStats=JSON.parse(stats[i.toString()])
-				var trace1 ={
-			    x:devStats["day"],
-			    y:devStats["t_q25"],
-			    line: {color: "transparent"},
-			    fillcolor: colorsTransp[i],
-			    name: "q25",
-			    showlegend: false,
-			    type: "scatter",
-			    mode: 'lines',
-					hoverinfo:"x+y"
-			  };
-			  var trace2 ={
-			    x:devStats["day"],
-			    y:devStats["t_avg"],
-			    mode:'lines+markers',
-			    name:labels[i],
-			    line: {color:colors[i]},
-			    marker: {color:colors[i]},
-			    fillcolor: colorsTransp[i],
-			    type: "scatter",
-			    fill: "tonexty",
-					hoverinfo:"x+y"
-			  };
-			  var trace3 ={
-			    x:devStats["day"],
-			    y:devStats["t_q75"],
-			    fill: "tonexty",
-			    fillcolor: colorsTransp[i],
-			    line: {color: "transparent"},
-			    name: "q75",
-			    showlegend: false,
-			    type: "scatter",
-			    mode: 'lines',
-					hoverinfo:"x+y"
-			  };
-
-			  var trace4 ={
-					x:devStats["day"],
-			    y:devStats["h_q25"],
-			    line: {color: "transparent"},
-			    fillcolor: colorsTransp[i],
-			    name: "q25",
-			    showlegend: false,
-			    type: "scatter",
-			    mode: 'lines',
-			    yaxis: 'y2',
-					hoverinfo:"x+y"
-			  };
-			  var trace5 ={
-					x:devStats["day"],
-					y:devStats["h_avg"],
-			    mode:'lines+markers',
-			    yaxis: 'y2',
-			    line: {color:colors[i]},
-			    marker: {color:colors[i]},
-			    fillcolor: colorsTransp[i],
-					showlegend: false,
-			    type: "scatter",
-			    fill: "tonexty",
-					hoverinfo:"x+y"
-			  };
-			  var trace6 ={
-					x:devStats["day"],
-			    y:devStats["h_q75"],
-			    fill: "tonexty",
-			    fillcolor: colorsTransp[i],
-			    line: {color: "transparent"},
-			    name: "q75",
-			    showlegend: false,
-			    type: "scatter",
-			    mode: 'lines',
-			    yaxis: 'y2',
-					hoverinfo:"x+y"
-			  };
-				if (plots[i]){
-					dataStats.push(trace1,trace2,trace3,trace4,trace5,trace6);
-				}
-			}
-		  var layout = {
-		    grid: {rows: 2, columns: 1},
-		    shared_xaxes: true,
-		    yaxis: {
-		      title:{text: "Temperature [ºC]"},
-		      row:1,
-		      col:1,
-		    },
-		    yaxis2: {
-		      title:{text: "Relative humidity [%]"},
-		      row:2,
-		      col:1,
-		    },
-		    hovermode:'closest',
-		  };
-		  Plotly.newPlot('plotlyStatsDiv', dataStats, layout);
+			doPlot("plotlyDiv", times, temp, labels, plots);
+			doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
 		}
 
 		//PLOTS
@@ -287,9 +136,9 @@
 				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
-		doPlot()
+		doPlot("plotlyDiv", times, temp, labels, plots);
 		var stats= <?php echo json_encode($stats) ?>;
-		doPlotStats()
+		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
 
 	</script>
 

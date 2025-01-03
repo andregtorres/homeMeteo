@@ -13,7 +13,7 @@ const colorsTransp = [
   'rgba(23, 190, 207,0.2)'
 ];
 
-function doPlot(){
+function doPlot(divName, times, temp, labels, plots){
   var data=[];
   for (var i = 0; i < N_devices ; i++) {
     var trace1 ={
@@ -55,11 +55,10 @@ function doPlot(){
       col:1,
     },
   };
-  Plotly.newPlot('plotlyDiv', data, layout);
+  Plotly.newPlot(divName, data, layout);
 }
 
-function doPlotStats(){
-  var d3colors = Plotly.d3.scale.category10();
+function doPlotStats(divName, N_devices, stats, lables, plots){
   var dataStats=[];
   for (var i = 0; i < N_devices ; i++) {
     var devStats=JSON.parse(stats[i.toString()])
