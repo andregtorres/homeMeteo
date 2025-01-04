@@ -58,7 +58,7 @@ function doPlot(divName, times, temp, labels, plots){
   Plotly.newPlot(divName, data, layout);
 }
 
-function doPlotStats(divName, N_devices, stats, lables, plots){
+function doPlotStats(divName, N_devices, stats, labels, plots){
   var dataStats=[];
   for (var i = 0; i < N_devices ; i++) {
     var devStats=JSON.parse(stats[i.toString()])
