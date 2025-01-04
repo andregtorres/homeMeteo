@@ -54,19 +54,18 @@
 				$plot[]=false;
 			}
 		}
-
 		//STATS
 		$stats=array();
 		for ($i=0; $i < $N_devices; $i++) {
 			$stats[]= getStatsById($conn, $devices[$i]["host_id"], 1);
 		}
 		//DENSITY
-		//$hists=array();
-		//for ($i=0; $i < $N_devices; $i++) {
-			//[$bins,$params]==getHistograms($conn, $i, 24);
-			//$hist_dates=array_keys(json_decode($params,true));
-			//$hists[]=[$hist_dates,$bins,$params];
-		//}
+		$hists=array();
+		for ($i=0; $i < $N_devices; $i++) {
+			[$bins,$params]=getHistograms($conn, $devices[$i]["host_id"], 24);
+			$hist_dates=array_keys(json_decode($params,true));
+			$hists[]=[$hist_dates,$bins,$params];
+		}
 		$conn->close();
   ?>
 	<table border="1">
@@ -101,6 +100,9 @@
 	<div id='plotlyDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
 	<h2>Statistics:</h2>
 	<div id='plotlyStatsDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+	<div class="wrapper">
+		<div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
+ </div>
 	<script>
 
 		function onChangeDevices(){
@@ -119,14 +121,6 @@
 		var humi=[];
 		var labels=[];
 		var plots=[];
-		//stats
-		var days=[];
-		var t_avg=[];
-		var t_q25=[];
-		var t_q75=[];
-		var h_avg=[];
-		var h_q25=[];
-		var h_q75=[];
 		<?php
 			for ($i=0; $i < $N_devices; $i++) {
 				echo "times.push(".$times[$i].");\n";
@@ -137,8 +131,55 @@
 			}
 		?>
 		doPlot("plotlyDiv", times, temp, labels, plots);
+		//stats
 		var stats= <?php echo json_encode($stats) ?>;
 		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
+		//DENSITY PLOTS
+		//https://plotly.com/javascript/hover-events/
+	  var myPlot = document.getElementById('plotlyStatsDiv'),
+	    hoverInfo = document.getElementById('hoverinfo');
+		var hists = <?php echo json_encode($hists); ?>;
+
+		var hoverIds=[];
+		var hoverBins=[];
+		var hoverParams=[];
+		var hoverLabels=[];
+		var hoverPlots=[];
+	  myPlot.on('plotly_hover', function(data){
+			hoverInfo.innerHTML = '';
+	    var infotext = data.points.map(function(d){
+				date = data.points[0].x;
+				console.log(date);
+				hoverBins=[];
+				hoverParams=[];
+				hoverLabels=[];
+				hoverPlots=[];
+				for (let i = 0; i < N_devices; i++) {
+					if (hists[i][0].includes(date)){
+						hoverBins.push(JSON.parse(hists[i][1])[date]);
+						hoverParams.push(JSON.parse(hists[i][2])[date]);
+						hoverLabels.push(labels[i]);
+						hoverPlots.push(plots[i]);
+					}
+				}
+				if (hoverBins.length > 0) {
+					return('<div style="height: 800px; max-width:800;" id="densityPlot">');
+				} else {
+					return('<img src="plots/notFound.jpg">');
+				}
+			});
+	    hoverInfo.innerHTML = infotext.join('<br/>');
+			if (hoverBins.length > 0) {
+				plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
+			}
+			//if (dates.includes(date)) {
+			//	plotDensity("densityPlot",date, bins, histParams);
+			//}
+	  })
+	  .on('plotly_unhover', function(data){
+	    //hoverInfo.innerHTML = '';
+	  });
+
 
 	</script>
 

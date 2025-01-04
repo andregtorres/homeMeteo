@@ -495,3 +495,211 @@ function plotDensity(divName, date, bins, histParams){
   };
   Plotly.newPlot(divName, data, layout);
 }
+
+function plotDensities(divName, bins, params, labels, plots){
+  var data = [];
+  for (let k = 0; k < bins.length; k++) {
+    for (var i=0; i < bins[k].length; i++) {
+      bins[k][i].map(x=>+x/100);
+    }
+    var tempBins=[];
+    var humiBins=[];
+    for(var i = 0; i < bins[k].length; i++) {
+      for(var j = 0; j < bins[k][0].length; j++) {
+        //console.log(bins2d[i][j]);
+        tempBins[i]=(tempBins[i] || 0) + bins[k][i][j];
+        humiBins[j]=(humiBins[j] || 0) + bins[k][i][j];
+      }
+    }
+    //transpose
+    bins2dT = bins[k][0].map((_, colIndex) => bins[k].map(row => row[colIndex]));
+    var t = range(params[k]["x_min"]/100,params[k]["x_max"]/100,params[k]["dx"]/100);
+    var h = range(params[k]["y_min"]/100,params[k]["y_max"]/100,params[k]["dy"]/100);
+    var tlims=[params[k]["x_min"]/100,params[k]["x_max"]/100];
+    var hlims=[params[k]["y_min"]/100,params[k]["y_max"]/100];
+    var clims=[0,60*24/2];
+
+    var contour1 ={
+      z: bins2dT,
+      x: t,
+      y: h,
+      xaxis: 'x1',
+      yaxis: 'y1',
+      ncontours: 12,
+      name:"",
+      colorscale: 'Greys',
+      reversescale: true,
+      showscale: false,
+      type: 'contour'
+    };
+    var histTemp ={
+      y: tempBins,
+      x: t,
+      xaxis: 'x2',
+      yaxis: 'y2',
+      type: 'bar',
+      name:"",
+      marker: {
+        color: colors[k]
+        },
+      };
+    var histHumi ={
+      y: h,
+      x: humiBins,
+      type: 'bar',
+      xaxis: 'x3',
+      yaxis: 'y3',
+      name:"",
+      orientation: 'h',
+      marker: {
+        color: colors[k]
+        },
+    };
+    var hl1 ={
+      y: [40,40],
+      x: tlims,
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tozeroy',
+      mode: 'markers',
+      name:"",
+      fillcolor: 'rgba(255, 0, 0, 0.02)',
+      marker: {
+        size: 0,
+        color:colorsTransp[k],
+      },
+    };
+    var hl2 ={
+      y: [60,60],
+      x: tlims,
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tonexty',
+      mode: 'markers',
+      name:"",
+      fillcolor: 'rgba(0, 207, 55, 0.02)',
+      marker: {
+        size: 0,
+        color:'rgba(0, 0, 0, 0)',
+      },
+    };
+    var hl3 ={
+      y: [hlims[1],hlims[1]],
+      x: tlims,
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tonexty',
+      mode: 'markers',
+      name:"",
+      fillcolor: 'rgba(255, 0, 0, 0.02)',
+      marker: {
+        size: 0,
+        color:'rgba(0, 0, 0, 0)',
+      },
+    };
+    var vl1 ={
+      y: hlims,
+      x: [20,20],
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tozerox',
+      mode: 'markers',
+      name:"",
+      fillcolor: 'rgba(255, 0, 0, 0.02)',
+      marker: {
+        size: 0,
+        color:'rgba(0, 0, 0, 0)',
+      },
+    };
+    var vl2 ={
+      y: hlims,
+      x: [25,25],
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tonextx',
+      mode: 'markers',
+      name:"",
+      fillcolor: 'rgba(0, 207, 55, 0.02)',
+      marker: {
+        size: 0,
+        color:'rgba(0, 0, 0, 0)',
+      },
+    };
+    var vl3 ={
+      y: hlims,
+      x: [tlims[1],tlims[1]],
+      xaxis: 'x1',
+      yaxis: 'y1',
+      type: 'scatter',
+      fill : 'tonextx',
+      mode: 'markers',
+      name:"",
+      fillcolor:'rgba(255, 0, 0, 0.02)',
+      marker: {
+        size: 0,
+        color:'rgba(0, 0, 0, 0)',
+      },
+    };
+    console.log(plots[k]);
+    if (plots[k]){
+      data.push(histTemp, contour1, histHumi, hl1, hl2, hl3, vl1, vl2, vl3);
+    }
+    var layout = {
+      grid: {rows: 2, columns: 2},
+      showlegend: false,
+      bargap :0.0,
+
+      xaxis: {
+        title:{text: "Temperature [ºC]"},
+        domain: [0, 0.8],
+        anchor: 'x1',
+        showgrid: true,
+        gridwidth: 2,
+        gridcolor: 'rgb(255,255,255)',
+        range: tlims,
+      },
+      yaxis: {
+        title:{text: "Relative humidity [%]"},
+        domain: [0, 0.8],
+        anchor: 'y1',
+        showgrid: true,
+        gridwidth: 2,
+        range: hlims,
+      },
+      xaxis2: {
+        domain: [0, 0.8],
+        anchor: 'x2',
+        range: tlims,
+        showticklabels: false,
+      },
+      yaxis2: {
+        domain: [0.8, 1],
+        anchor: 'y2',
+        range: clims,
+        showticklabels: false,
+        gridcolor: "rgba(0,0,0,0)",
+      },
+      xaxis3: {
+        domain: [0.8, 1],
+        anchor: 'x3',
+        range: clims,
+        showticklabels: false,
+        gridcolor: "rgba(0,0,0,0)",
+      },
+      yaxis3: {
+        domain: [0, 0.8],
+        anchor: 'y3',
+        range: hlims,
+        showticklabels: false,
+        gridwidth: 0,
+      },
+    };
+
+  }
+  Plotly.newPlot(divName, data, layout);
+}
