@@ -112,6 +112,7 @@
 			}
 			doPlot("plotlyDiv", times, temp, labels, plots);
 			doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
+			plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
 		}
 
 		//PLOTS
@@ -179,8 +180,6 @@
 	  .on('plotly_unhover', function(data){
 	    //hoverInfo.innerHTML = '';
 	  });
-
-
 	</script>
 
 </body>

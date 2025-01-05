@@ -12,6 +12,33 @@ const colorsTransp = [
   'rgba(189, 89, 255,0.2)',
   'rgba(23, 190, 207,0.2)'
 ];
+const cs1 = [
+  ['0.0',                 'rgba( 89, 136, 255,0.5)'],
+  ['0.14285714285714285', 'rgba(115, 154, 255,0.5)'],
+  ['0.2857142857142857',  'rgba(140, 173, 255,0.5)'],
+  ['0.42857142857142855', 'rgba(166, 191, 255,0.5)'],
+  ['0.5714285714285714',  'rgba(191, 209, 255,0.5)'],
+  ['0.7142857142857143',  'rgba(217, 227, 255,0.5)'],
+  ['0.8571428571428571',  'rgba(242, 246, 255,0.5)'],
+  ['1.0',                 'rgba(255, 255, 255,0.5)']
+];
+const cs2 = [
+  ['0.0',                 'rgba(255, 133, 89 ,0.5)'],
+  ['0.14285714285714285', 'rgba(255, 152, 115,0.5)'],
+  ['0.2857142857142857',  'rgba(255, 170, 140,0.5)'],
+  ['0.42857142857142855', 'rgba(255, 189, 166,0.5)'],
+  ['0.5714285714285714',  'rgba(255, 208, 191,0.5)'],
+  ['0.7142857142857143',  'rgba(255, 227, 217,0.5)'],
+  ['0.8571428571428571',  'rgba(255, 245, 242,0.5)'],
+  ['1.0',                 'rgba(255, 255, 255,0.5)']
+];
+const colorscales = [
+  cs1,
+  cs2,
+  cs1,
+  cs1,
+  cs1
+];
 
 function doPlot(divName, times, temp, labels, plots){
   var data=[];
@@ -525,9 +552,13 @@ function plotDensities(divName, bins, params, labels, plots){
       y: h,
       xaxis: 'x1',
       yaxis: 'y1',
-      ncontours: 12,
+      ncontours: 8,
       name:"",
-      colorscale: 'Greys',
+      line:{
+        smoothing: 0.85,
+        color: colors[k],
+      },
+      colorscale: colorscales[k],
       reversescale: true,
       showscale: false,
       type: 'contour'
