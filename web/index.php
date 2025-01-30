@@ -8,101 +8,103 @@
 </head>
 
 <body>
-  <h1> Home Meteo </h1>
-	<p><a href="full.php">Full data</a> | <a href="prague.php">Prague</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
-	<?php
-
-		//Connect to database
-		include("include/dbConn.php");
-		include("include/dbQuerries.php");
-
-	  if (!$conn){
-	    echo 'Connection attempt failed.<br>';
-	  }
-
-		$sql = "SELECT host_id, location, mins FROM homeMeteoDevices WHERE live IS TRUE ORDER BY host_id";
-		$result = $conn->query($sql);
-		if ($result) {
-			$devices = $result->fetch_all(MYSQLI_ASSOC);
-		} else {
-			echo "Database error! <br>";
-		}
-		$result -> free_result();
-		$times=array();
-		$temp=array();
-		$humi=array();
-		$online=array();
-		$plot=array();
-		$N_devices=count($devices);
-
-		//online Status
-		$now = new DateTime('now');
-		for ($i=0; $i < $N_devices; $i++) {
-			[$times_, $temp_, $humi_] = getDaysById($conn, $devices[$i]["host_id"], 2);
-			$times[]= $times_;
-			$temp[]= $temp_;
-			$humi[]= $humi_;
-			$online[]=false;
-			if (count(json_decode($times_))>0){
-				$plot[]=true;
-				$then = new DateTime(end(json_decode($times_)));
-				$interval =  $now->getTimestamp() - $then->getTimestamp();
-				if ($interval <= $devices[$i]["mins"]*60){
-					$online[$i]=true;
-				}
-			}else{
-				$plot[]=false;
-			}
-		}
-		//STATS
-		$stats=array();
-		for ($i=0; $i < $N_devices; $i++) {
-			$stats[]= getStatsById($conn, $devices[$i]["host_id"], 1);
-		}
-		//DENSITY
-		$hists=array();
-		for ($i=0; $i < $N_devices; $i++) {
-			[$bins,$params]=getHistograms($conn, $devices[$i]["host_id"], 24);
-			$hist_dates=array_keys(json_decode($params,true));
-			$hists[]=[$hist_dates,$bins,$params];
-		}
-		$conn->close();
-  ?>
-	<table border="1">
-	  <tr>
-			<th>Location</th>
-	    <th>Device</th>
-			<th>Status</th>
-			<th>Last measurement</th>
-			<th>Temp. [&#176;C]</th>
-			<th>RH [%]</th>
-			<th>Plot</th>
-	  </tr>
+	<div class="content">
+	  <h1> Home Meteo </h1>
+		<p><a href="full.php">Full data</a> | <a href="prague.php">Prague</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
 		<?php
-			for ($i=0; $i < $N_devices; $i++) {
-				$color= $online[$i] ? "#228b22" : "#ff0000";
-				$onOff= $online[$i] ? "Online" : "Offline";
-				$checked= $plot[$i] ? "checked" : "";
 
-				echo "<tr>";
-				echo "<td>" . $devices[$i]["location"] . "</td>";
-				echo "<td>" . $devices[$i]["host_id"] . "</td>";
-				echo '<td> <span class="dot" style="background-color:' . $color . ';"></span>  '. $onOff .'</td>';
-				echo "<td>" . end(json_decode($times[$i])) . "</td>";
-				echo "<td>" . end(json_decode($temp[$i])) . "</td>";
-				echo "<td>" . end(json_decode($humi[$i])) . "</td>";
-				echo '<td><input type="checkbox" onclick="onChangeDevices()" name="plotDevice"'.$checked.'></td>';
-				echo "</tr>";
+			//Connect to database
+			include("include/dbConn.php");
+			include("include/dbQuerries.php");
+
+		  if (!$conn){
+		    echo 'Connection attempt failed.<br>';
+		  }
+
+			$sql = "SELECT host_id, location, mins FROM homeMeteoDevices WHERE live IS TRUE ORDER BY host_id";
+			$result = $conn->query($sql);
+			if ($result) {
+				$devices = $result->fetch_all(MYSQLI_ASSOC);
+			} else {
+				echo "Database error! <br>";
 			}
-		?>
-	</table>
-	<br>
-	<div id='plotlyDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
-	<h2>Statistics:</h2>
-	<div id='plotlyStatsDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
-	<div class="wrapper">
-		<div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
- </div>
+			$result -> free_result();
+			$times=array();
+			$temp=array();
+			$humi=array();
+			$online=array();
+			$plot=array();
+			$N_devices=count($devices);
+
+			//online Status
+			$now = new DateTime('now');
+			for ($i=0; $i < $N_devices; $i++) {
+				[$times_, $temp_, $humi_] = getDaysById($conn, $devices[$i]["host_id"], 2);
+				$times[]= $times_;
+				$temp[]= $temp_;
+				$humi[]= $humi_;
+				$online[]=false;
+				if (count(json_decode($times_))>0){
+					$plot[]=true;
+					$then = new DateTime(end(json_decode($times_)));
+					$interval =  $now->getTimestamp() - $then->getTimestamp();
+					if ($interval <= $devices[$i]["mins"]*60){
+						$online[$i]=true;
+					}
+				}else{
+					$plot[]=false;
+				}
+			}
+			//STATS
+			$stats=array();
+			for ($i=0; $i < $N_devices; $i++) {
+				$stats[]= getStatsById($conn, $devices[$i]["host_id"], 1);
+			}
+			//DENSITY
+			$hists=array();
+			for ($i=0; $i < $N_devices; $i++) {
+				[$bins,$params]=getHistograms($conn, $devices[$i]["host_id"], 24);
+				$hist_dates=array_keys(json_decode($params,true));
+				$hists[]=[$hist_dates,$bins,$params];
+			}
+			$conn->close();
+	  ?>
+		<table class="normal">
+		  <tr>
+				<th>Location</th>
+		    <th>Device</th>
+				<th>Status</th>
+				<th>Last measurement</th>
+				<th>Temp. [&#176;C]</th>
+				<th>RH [%]</th>
+				<th>Plot</th>
+		  </tr>
+			<?php
+				for ($i=0; $i < $N_devices; $i++) {
+					$color= $online[$i] ? "#228b22" : "#ff0000";
+					$onOff= $online[$i] ? "Online" : "Offline";
+					$checked= $plot[$i] ? "checked" : "";
+
+					echo "<tr>";
+					echo "<td>" . $devices[$i]["location"] . "</td>";
+					echo "<td>" . $devices[$i]["host_id"] . "</td>";
+					echo '<td> <span class="dot" style="background-color:' . $color . ';"></span>  '. $onOff .'</td>';
+					echo "<td>" . end(json_decode($times[$i])) . "</td>";
+					echo "<td>" . end(json_decode($temp[$i])) . "</td>";
+					echo "<td>" . end(json_decode($humi[$i])) . "</td>";
+					echo '<td><input type="checkbox" onclick="onChangeDevices()" name="plotDevice"'.$checked.'></td>';
+					echo "</tr>";
+				}
+			?>
+		</table>
+		<br>
+		<div class="plot" id='plotlyDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+		<h2>Statistics:</h2>
+		<div class="plot" id='plotlyStatsDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+		<div class="wrapper">
+			<div id="hoverinfo" class="wrapper__img" style="margin-left:200px;"></div><!-- Histogram -->
+	 	</div>
+	 </div>
 	<script>
 
 		function onChangeDevices(){

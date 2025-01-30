@@ -12,10 +12,153 @@
   height: auto;
 }
 
+/* center */
+/*
+h1 {text-align: center;}
+p {text-align: center;}
+div {text-align: center;}
+*/
+.content {
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* online dot */
 .dot {
-  height: 10px;
-  width: 10px;
+  height: 12px;
+  width: 12px;
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  margin: 0;
+}
+.status {
+  margin: auto;
+  padding: 0px;
+}
+
+/* spacing */
+* {
+  margin: 5;
+}
+
+/* text */
+body {
+  background-color: white;
+  font-family: Helvetica, Arial,  sans-serif;
+  font-size: 16px;
+  color: black;
+}
+
+h1 {
+  color: #ff5100;
+  font-size: 48px;
+}
+
+.header div {
+  margin: 10px 0 5px;
+}
+
+.header img {
+  float: left;
+  width: 78px;
+}
+
+.header h1 {
+  position: relative;
+  left: 10px;
+}
+.header p {
+  position: relative;
+  left: 10px;
+}
+
+h2 {
+  color: #ff5100;
+  font-size: 24px;
+  padding: 24px 0px 8px;
+}
+
+/* plots */
+.plot {
+  heigth: 500px;
+  max-width: 1000px;
+}
+
+/* Other elements  */
+legend {
+  background-color: #ff5100;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+input[type="submit"] {
+  background-color: #ff5100;
+  border-style: none;
+  border-radius: 0px;
+  padding: 4px 10px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+}
+
+textarea {
+  overflow: auto;
+}
+
+input[type="submit"]:hover, input[type="submit"]:focus {
+  background-color: #ff9500;
+}
+
+input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #ff9500;
+}
+
+fieldset {
+  margin: 0;
+  width: 0px;
+  display: block;
+  border-color: #ff5100;
+  border-style: solid;
+  padding: 5px;
+}
+.setting{
+  margin: 0;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+select{
+  border: 0;
+  border-bottom: 2px solid #ff5100;
+  &:focus, &:active {
+    border-bottom-color: #ff9500;
+  }
+}
+
+/*  Tables  */
+.normal{
+  border-collapse: collapse;
+  /*border: 1;
+  border-color: #ff5100;
+  border-style: solid;
+  padding: 5px;*/
+}
+
+.normal th{
+  background-color: #ff5100;
+  color: white;
+  border: 1px solid #ff5100;
+  padding: 2px 5px;
+}
+
+.normal td{
+  border: 2px solid #ff5100;
+  padding: 2px 5px;
 }

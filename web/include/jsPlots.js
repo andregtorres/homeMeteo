@@ -71,6 +71,7 @@ function doPlot(divName, times, temp, labels, plots){
   var layout = {
     grid: {rows: 2, columns: 1},
     shared_xaxes: true,
+    margin: { t: 5, b:20 },
     yaxis: {
       title:{text: "Temperature [ºC]"},
       row:1,
@@ -170,6 +171,7 @@ function doPlotStats(divName, N_devices, stats, labels, plots){
   var layout = {
     grid: {rows: 2, columns: 1},
     shared_xaxes: true,
+    margin: { t: 5, b:20 },
     yaxis: {
       title:{text: "Temperature [ºC]"},
       row:1,
@@ -302,6 +304,7 @@ function plotStats(divName, days, t_avg, t_q25, t_q75, h_avg, h_q25, h_q75){
   var layout = {
     grid: {rows: 2, columns: 1},
     shared_xaxes: true,
+    margin: { t: 5, b:20 },
     yaxis: {
       title:{text: "Temperature [ºC]"},
       row:1,
@@ -474,6 +477,7 @@ function plotDensity(divName, date, bins, histParams){
     grid: {rows: 2, columns: 2},
     showlegend: false,
     bargap :0.0,
+    //margin: { t: 5, b:5 },
 
     xaxis: {
       title:{text: "Temperature [ºC]"},
@@ -684,6 +688,7 @@ function plotDensities(divName, bins, params, labels, plots){
       grid: {rows: 2, columns: 2},
       showlegend: false,
       bargap :0.0,
+      //margin: { t: 5, b:20 },
 
       xaxis: {
         title:{text: "Temperature [ºC]"},
