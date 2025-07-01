@@ -40,9 +40,9 @@ const colorscales = [
   cs1
 ];
 
-function doPlot(divName, times, temp, labels, plots){
+function doPlot(divName, Nitems, times, temp, labels, plots){
   var data=[];
-  for (var i = 0; i < N_devices ; i++) {
+  for (var i = 0; i < Nitems ; i++) {
     var trace1 ={
         x:times[i],
         y:temp[i],

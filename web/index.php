@@ -35,6 +35,7 @@
 			$online=array();
 			$plot=array();
 			$N_devices=count($devices);
+			$N_meteo=0;
 
 			//online Status
 			$now = new DateTime('now');
@@ -55,6 +56,31 @@
 					$plot[]=false;
 				}
 			}
+
+			//METEO
+			$url='https://api.open-meteo.com/v1/forecast?latitude=50.0614&longitude=19.9366&hourly=temperature_2m,relative_humidity_2m&past_days=1&forecast_days=1&timezone=Europe%2FBerlin';
+			$jsonResponse = file_get_contents($url);
+			if ($jsonResponse) {
+				$meteo=json_decode($jsonResponse)->hourly;
+				$lastIdx=0;
+				$now2=strtotime("now");
+				for ($i = 0; $i < count($meteo->time) ; $i++) {
+					$meteo->time[$i]=str_replace("T", " ", $meteo->time[$i]);
+					$timePoint = strtotime($meteo->time[$i]);
+					if ($timePoint<=$now2){
+						$lastIdx=$i;
+					}
+				}
+				$times[]=json_encode(array_slice($meteo->time,0,$lastIdx+1));
+				$temp[]=json_encode(array_slice($meteo->temperature_2m,0,$lastIdx+1));
+				$humi[]=json_encode(array_slice($meteo->relative_humidity_2m,0,$lastIdx+1));
+				$online[]=true;
+				$plot[]=true;
+				$devices[]= array("host_id"=>0, "location"=>"Outside", "mins"=>0);
+				$N_meteo=1;
+
+			}
+
 			//STATS
 			$stats=array();
 			for ($i=0; $i < $N_devices; $i++) {
@@ -80,7 +106,8 @@
 				<th>Plot</th>
 		  </tr>
 			<?php
-				for ($i=0; $i < $N_devices; $i++) {
+				$N=$N_devices + $N_meteo;
+				for ($i=0; $i < $N; $i++) {
 					$color= $online[$i] ? "#228b22" : "#ff0000";
 					$onOff= $online[$i] ? "Online" : "Offline";
 					$checked= $plot[$i] ? "checked" : "";
@@ -112,28 +139,34 @@
 			for (var i = 0; i < checkedBoxes.length; i++) {
 				plots[i]=checkedBoxes[i].checked;
 			}
-			doPlot("plotlyDiv", times, temp, labels, plots);
+			doPlot("plotlyDiv", Nitems, times, temp, labels, plots);
 			doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
 			plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
 		}
 
 		//PLOTS
 		var N_devices= <?php echo $N_devices; ?>;
+		var Nitems= <?php echo $N; ?>;
 		var times=[];
 		var temp=[];
 		var humi=[];
 		var labels=[];
 		var plots=[];
 		<?php
-			for ($i=0; $i < $N_devices; $i++) {
+			for ($i=0; $i < $N; $i++) {
 				echo "times.push(".$times[$i].");\n";
 				echo "temp.push(".$temp[$i].");\n";
 				echo "humi.push(".$humi[$i].");\n";
-				echo "plots.push(".$plot[$i].");\n";
+				//echo "plots.push(".$plot[$i].");\n";
+				if ($plot[$i]) {
+					echo "plots.push(1);\n";
+				}else{
+					echo "plots.push(0);\n";
+				}
 				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
-		doPlot("plotlyDiv", times, temp, labels, plots);
+		doPlot("plotlyDiv", Nitems, times, temp, labels, plots);
 		//stats
 		var stats= <?php echo json_encode($stats) ?>;
 		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
@@ -152,7 +185,6 @@
 			hoverInfo.innerHTML = '';
 	    var infotext = data.points.map(function(d){
 				date = data.points[0].x;
-				console.log(date);
 				hoverBins=[];
 				hoverParams=[];
 				hoverLabels=[];
