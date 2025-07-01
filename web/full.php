@@ -106,11 +106,8 @@
 			for (var i = 0; i < checkedBoxes.length; i++) {
 				plots[i]=checkedBoxes[i].checked;
 			}
-			console.log(0);
-			doPlot("plotlyDiv", times, temp, labels, plots);
-			console.log(1);
+			doPlot("plotlyDiv", N_devices, times, temp, labels, plots);
 			doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
-			console.log(2);
 		}
 
 		//PLOTS
@@ -129,7 +126,7 @@
 				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
-		doPlot("plotlyDiv", times, temp, labels, plots);
+		doPlot("plotlyDiv", N_devices, times, temp, labels, plots);
 		//stats
 		var stats= <?php echo json_encode($stats) ?>;
 		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
