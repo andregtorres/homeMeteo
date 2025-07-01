@@ -207,13 +207,37 @@
 			if (hoverBins.length > 0) {
 				plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
 			}
-			//if (dates.includes(date)) {
-			//	plotDensity("densityPlot",date, bins, histParams);
-			//}
 	  })
 	  .on('plotly_unhover', function(data){
 	    //hoverInfo.innerHTML = '';
 	  });
+		myPlot.on('plotly_click', function(data){
+			hoverInfo.innerHTML = '';
+	    var infotext = data.points.map(function(d){
+				date = data.points[0].x;
+				hoverBins=[];
+				hoverParams=[];
+				hoverLabels=[];
+				hoverPlots=[];
+				for (let i = 0; i < N_devices; i++) {
+					if (hists[i][0].includes(date)){
+						hoverBins.push(JSON.parse(hists[i][1])[date]);
+						hoverParams.push(JSON.parse(hists[i][2])[date]);
+						hoverLabels.push(labels[i]);
+						hoverPlots.push(plots[i]);
+					}
+				}
+				if (hoverBins.length > 0) {
+					return('<div style="height: 800px; max-width:800;" id="densityPlot">');
+				} else {
+					return('<img src="plots/notFound.jpg">');
+				}
+			});
+	    hoverInfo.innerHTML = infotext.join('<br/>');
+			if (hoverBins.length > 0) {
+				plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
+			}
+		});
 	</script>
 
 </body>
