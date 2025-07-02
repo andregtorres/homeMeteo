@@ -40,30 +40,30 @@ const colorscales = [
   cs1
 ];
 
-function doPlot(divName, Nitems, times, temp, labels, plots){
+function doPlot(divName, Nitems_, times_, temp_, humi_, labels_, plots_){
   var data=[];
-  for (var i = 0; i < Nitems ; i++) {
+  for (var i = 0; i < Nitems_ ; i++) {
     var trace1 ={
-        x:times[i],
-        y:temp[i],
+        x:times_[i],
+        y:temp_[i],
         mode:'lines+markers',
-        name:labels[i],
+        name:labels_[i],
         marker: {
           color:colors[i],
         },
     };
     var trace2 ={
-        x:times[i],
-        y:humi[i],
+        x:times_[i],
+        y:humi_[i],
         mode:'lines+markers',
-        name: labels[i],
+        name: labels_[i],
         yaxis: 'y2',
         marker: {
           color:colors[i],
         },
         showlegend: false,
     };
-    if (plots[i]){
+    if (plots_[i]){
       data.push(trace1,trace2);
     }
 

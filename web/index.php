@@ -139,7 +139,7 @@
 			for (var i = 0; i < checkedBoxes.length; i++) {
 				plots[i]=checkedBoxes[i].checked;
 			}
-			doPlot("plotlyDiv", Nitems, times, temp, labels, plots);
+			doPlot("plotlyDiv", Nitems, times, temp, humi, labels, plots);
 			doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
 			plotDensities("densityPlot",hoverBins, hoverParams, hoverLabels, hoverPlots);
 		}
@@ -166,7 +166,7 @@
 				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
-		doPlot("plotlyDiv", Nitems, times, temp, labels, plots);
+		doPlot("plotlyDiv", Nitems, times, temp, humi, labels, plots);
 		//stats
 		var stats= <?php echo json_encode($stats) ?>;
 		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
@@ -185,6 +185,7 @@
 			hoverInfo.innerHTML = '';
 	    var infotext = data.points.map(function(d){
 				date = data.points[0].x;
+				//console.log(date);
 				hoverBins=[];
 				hoverParams=[];
 				hoverLabels=[];
@@ -228,7 +229,7 @@
 					}
 				}
 				if (hoverBins.length > 0) {
-					return('<div style="height: 800px; max-width:800;" id="densityPlot">');
+					return('<div style="height: 800px; max-width:800;" id="densityPlot"></div>');
 				} else {
 					return('<img src="plots/notFound.jpg">');
 				}
