@@ -10,7 +10,7 @@
 <body>
 	<div class="content">
 	  <h1> Home Meteo </h1>
-		<p><a href="index.php">Back</a> | <a href="prague.php">Prague</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
+		<p><a href="index.php">Home</a> | <a href="prague.php">Prague</a> | <a href="last.php">Last measurement</a> | <a href="https://github.com/andregtorres/homeMeteo">GitHub</a></p>
 		<?php
 
 			//Connect to database
@@ -126,7 +126,7 @@
 				echo "labels.push('".$devices[$i]["location"]."');";
 			}
 		?>
-		doPlot("plotlyDiv", N_devices, times, temp, labels, plots);
+		doPlot("plotlyDiv", N_devices, times, temp, humi, labels, plots);
 		//stats
 		var stats= <?php echo json_encode($stats) ?>;
 		doPlotStats("plotlyStatsDiv", N_devices, stats, labels, plots);
