@@ -12,10 +12,10 @@ if ($result1->num_rows > 0) {
         $temp = $row["temp"];
         $humi = $row["humi"];
     }
-    $data = [ 'temp' => round($temp/100, 1), 'humi' => round($humi/100, 0), "status" => 1 ];    
+    $data = [ 'temp' => round($temp/100, 1), 'humi' => round($humi/100, 0), "status" => "OK" ];    
 
 } else {
-    $data = [ 'temp' => 0, 'humi' => 0, "status" => 0 ];    
+    $data = [ 'temp' => 0, 'humi' => 0, "status" => "NOT OK" ];    
 }
 echo json_encode($data);
 
